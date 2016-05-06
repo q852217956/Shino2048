@@ -45,9 +45,6 @@ bool TubeLayer::init() {
     auto touchListener = EventListenerTouchOneByOne::create();
     touchListener -> setSwallowTouches(true);
     touchListener -> onTouchBegan = [&](Touch *touch, Event *event){
-        /*if (isTouchFinished == false) {
-            return false;
-        }*/
         touchPoint = touch -> getLocation();
         auto touchRange = Rect(getPosition(), getContentSize());
         if (touchRange.containsPoint(touchPoint)) {
@@ -64,25 +61,17 @@ bool TubeLayer::init() {
             int moveDirection;
             if (std::abs(moveDistance.x) > std::abs(moveDistance.y)) {
                 if (moveDistance.x > 0) {
-                    //isTouchFinished = false;
-                    //moveRight();
                     moveDirection = 2;
                     touchMoveStack.push_back(moveDirection);
                 } else {
-                    //isTouchFinished = false;
-                    //moveLeft();
                     moveDirection = 1;
                     touchMoveStack.push_back(moveDirection);
                 }
             } else {
                 if (moveDistance.y > 0) {
-                    //isTouchFinished = false;
-                    //moveUp();
                     moveDirection = 3;
                     touchMoveStack.push_back(moveDirection);
                 } else {
-                    //isTouchFinished = false;
-                    //moveDown();
                     moveDirection = 4;
                     touchMoveStack.push_back(moveDirection);
                 }
@@ -94,8 +83,8 @@ bool TubeLayer::init() {
     eventDispatcher -> addEventListenerWithSceneGraphPriority(touchListener, this);
     
     schedule([=](float dt){
-        if (!touchMoveStack.empty() && isTouchFinished == true){
-            isTouchFinished = false;
+        if (!touchMoveStack.empty() && isMoveFinished == true){
+            isMoveFinished = false;
             auto moveDirection = touchMoveStack.front();
             touchMoveStack.pop_back();
             switch (moveDirection) {
@@ -128,19 +117,38 @@ Vec2 TubeLayer::setTubePosition(Vec2 tubeCoordinate) {
 }
 
 void TubeLayer::randomTubeNum(float delayTime) {
-    if (isFinished()) {
-        return ;
+    Vector<NumberTube*> tubeToRandom;
+    bool isFinished = true;
+    for(int y = 0; y < 4; y++) {
+        for(int x = 0; x < 4; x++) {
+            if(tube[y][x] -> getNum() == 0) {
+                tubeToRandom.pushBack(tube[y][x]);
+                isFinished = false;
+            } else {
+                if(x != 3) {
+                    if(tube[y][x] -> getNum() == tube[y][x + 1] -> getNum()) {
+                        isFinished = false;
+                    }
+                }
+            }
+        }
     }
-    int x, y;
-    do {
-        x = CCRANDOM_0_1() * 4;
-        y = CCRANDOM_0_1() * 4;
-    } while (tube[y][x] -> getNum() != 0);
-    tube[y][x] -> setRandomNum();
-    isTouchFinished = true;
+    for(int x = 0; x < 4; x++) {
+        for(int y = 0; y < 4; y++) {
+            if(y != 3) {
+                if(tube[y][x] -> getNum() == tube[y + 1][x] -> getNum()) {
+                    isFinished = false;
+                }
+            }
+        }
+    }
+    if(!tubeToRandom.empty()) {
+        tubeToRandom.getRandomObject() -> setRandomNum();
+    }
+    isMoveFinished = true;
 }
 
-bool TubeLayer::moveLeft() {
+void TubeLayer::moveLeft() {
     bool isMove = false;
     Vector<NumberTube*> tubeToMoveStack;
     Vector<NumberTube*> tubeWillArriveStack;
@@ -163,45 +171,33 @@ bool TubeLayer::moveLeft() {
             if (!tubeToMoveStack.empty()) {
                 if (tubeToMove -> getNum() == tubeToMoveStack.back() -> getNum()) {
                     isMove = true;
-                    auto seqA = tubeToMove -> actionAddBy(tubeWillArrive);
-                    tubeToMove -> runAction(seqA);
-                    //tubeToMove -> action(tubeWillArrive, 1);
-                    
+                    tubeToMove -> runActionAddBy(tubeWillArrive);
                     tubeToMove = tubeToMoveStack.back();
                     tubeToMoveStack.popBack();
                     
-                    auto seqB = tubeToMove-> actionAddTo(tubeWillArrive);
-                    tubeToMove -> runAction(seqB);
-                    //tubeToMove -> action(tubeWillArrive, 2);
-                    
+                    tubeToMove-> runActionAddTo(tubeWillArrive);
                     tubeWillArriveStack.popBack();
                     tubeWillArrive = tubeWillArriveStack.back();
                 } else {
-                    auto seq = tubeToMove -> actionMoveTo(tubeWillArrive);
-                    tubeToMove -> runAction(seq);
-                    //tubeToMove -> action(tubeWillArrive, 3);
-                    
+                    tubeToMove -> runActionMoveTo(tubeWillArrive);
                     tubeWillArriveStack.popBack();
                     tubeWillArrive = tubeWillArriveStack.back();
                 }
             } else {
-                auto seq = tubeToMove -> actionMoveTo(tubeWillArrive);
-                tubeToMove -> runAction(seq);
-                //tubeToMove -> action(tubeWillArrive, 3);
+                tubeToMove -> runActionMoveTo(tubeWillArrive);
                 tubeWillArriveStack.popBack();
                 tubeWillArrive = tubeWillArriveStack.back();
             }
         }
     }
     if (isMove) {
-        scheduleOnce(schedule_selector(TubeLayer::randomTubeNum), 0.3);
+        scheduleOnce(schedule_selector(TubeLayer::randomTubeNum), 0.25);
     } else {
-        isTouchFinished = true;
+        isMoveFinished = true;
     }
-    return isMove;
 }
 
-bool TubeLayer::moveRight() {
+void TubeLayer::moveRight() {
     bool isMove = false;
     Vector<NumberTube*> tubeToMoveStack;
     Vector<NumberTube*> tubeWillArriveStack;
@@ -224,45 +220,33 @@ bool TubeLayer::moveRight() {
             if (!tubeToMoveStack.empty()) {
                 if (tubeToMove -> getNum() == tubeToMoveStack.back() -> getNum()) {
                     isMove = true;
-                    auto seqA = tubeToMove -> actionAddBy(tubeWillArrive);
-                    tubeToMove -> runAction(seqA);
-                    //tubeToMove -> action(tubeWillArrive, 1);
-                    
+                    tubeToMove -> runActionAddBy(tubeWillArrive);
                     tubeToMove = tubeToMoveStack.back();
                     tubeToMoveStack.popBack();
                     
-                    auto seqB = tubeToMove -> actionAddTo(tubeWillArrive);
-                    tubeToMove -> runAction(seqB);
-                    //tubeToMove -> action(tubeWillArrive, 2);
-                    
+                    tubeToMove -> runActionAddTo(tubeWillArrive);
                     tubeWillArriveStack.popBack();
                     tubeWillArrive = tubeWillArriveStack.back();
                 } else {
-                    auto seq = tubeToMove -> actionMoveTo(tubeWillArrive);
-                    tubeToMove -> runAction(seq);
-                    //tubeToMove -> action(tubeWillArrive, 3);
-                    
+                    tubeToMove -> runActionMoveTo(tubeWillArrive);
                     tubeWillArriveStack.popBack();
                     tubeWillArrive = tubeWillArriveStack.back();
                 }
             } else {
-                auto seq = tubeToMove -> actionMoveTo(tubeWillArrive);
-                tubeToMove -> runAction(seq);
-                //tubeToMove -> action(tubeWillArrive, 3);
+                tubeToMove -> runActionMoveTo(tubeWillArrive);
                 tubeWillArriveStack.popBack();
                 tubeWillArrive = tubeWillArriveStack.back();
             }
         }
     }
     if (isMove) {
-        scheduleOnce(schedule_selector(TubeLayer::randomTubeNum), 0.3);
+        scheduleOnce(schedule_selector(TubeLayer::randomTubeNum), 0.25);
     } else {
-        isTouchFinished = true;
+        isMoveFinished = true;
     }
-    return isMove;
 }
 
-bool TubeLayer::moveUp() {
+void TubeLayer::moveUp() {
     bool isMove = false;
     Vector<NumberTube*> tubeToMoveStack;
     Vector<NumberTube*> tubeWillArriveStack;
@@ -285,45 +269,33 @@ bool TubeLayer::moveUp() {
             if (!tubeToMoveStack.empty()) {
                 if (tubeToMove -> getNum() == tubeToMoveStack.back() -> getNum()) {
                     isMove = true;
-                    auto seqA = tubeToMove -> actionAddBy(tubeWillArrive);
-                    tubeToMove -> runAction(seqA);
-                    //tubeToMove -> action(tubeWillArrive, 1);
-                    
+                    tubeToMove -> runActionAddBy(tubeWillArrive);
                     tubeToMove = tubeToMoveStack.back();
                     tubeToMoveStack.popBack();
                     
-                    auto seqB = tubeToMove -> actionAddTo(tubeWillArrive);
-                    tubeToMove -> runAction(seqB);
-                    //tubeToMove -> action(tubeWillArrive, 2);
-                    
+                    tubeToMove -> runActionAddTo(tubeWillArrive);
                     tubeWillArriveStack.popBack();
                     tubeWillArrive = tubeWillArriveStack.back();
                 } else {
-                    auto seq = tubeToMove -> actionMoveTo(tubeWillArrive);
-                    tubeToMove -> runAction(seq);
-                    //tubeToMove -> action(tubeWillArrive, 3);
-                    
+                    tubeToMove -> runActionMoveTo(tubeWillArrive);
                     tubeWillArriveStack.popBack();
                     tubeWillArrive = tubeWillArriveStack.back();
                 }
             } else {
-                auto seq = tubeToMove -> actionMoveTo(tubeWillArrive);
-                tubeToMove -> runAction(seq);
-                //tubeToMove -> action(tubeWillArrive, 3);
+                tubeToMove -> runActionMoveTo(tubeWillArrive);
                 tubeWillArriveStack.popBack();
                 tubeWillArrive = tubeWillArriveStack.back();
             }
         }
     }
     if (isMove) {
-        scheduleOnce(schedule_selector(TubeLayer::randomTubeNum), 0.3);
+        scheduleOnce(schedule_selector(TubeLayer::randomTubeNum), 0.25);
     } else {
-        isTouchFinished = true;
+        isMoveFinished = true;
     }
-    return isMove;
 }
 
-bool TubeLayer::moveDown() {
+void TubeLayer::moveDown() {
     bool isMove = false;
     Vector<NumberTube*> tubeToMoveStack;
     Vector<NumberTube*> tubeWillArriveStack;
@@ -346,61 +318,28 @@ bool TubeLayer::moveDown() {
             if (!tubeToMoveStack.empty()) {
                 if (tubeToMove -> getNum() == tubeToMoveStack.back() -> getNum()) {
                     isMove = true;
-                    auto seqA = tubeToMove -> actionAddBy(tubeWillArrive);
-                    tubeToMove -> runAction(seqA);
-                    //tubeToMove -> action(tubeWillArrive, 1);
-                    
+                    tubeToMove -> runActionAddBy(tubeWillArrive);
                     tubeToMove = tubeToMoveStack.back();
                     tubeToMoveStack.popBack();
                     
-                    auto seqB = tubeToMove-> actionAddTo(tubeWillArrive);
-                    tubeToMove -> runAction(seqB);
-                    //tubeToMove -> action(tubeWillArrive, 2);
-                    
+                    tubeToMove-> runActionAddTo(tubeWillArrive);
                     tubeWillArriveStack.popBack();
                     tubeWillArrive = tubeWillArriveStack.back();
                 } else {
-                    auto seq = tubeToMove -> actionMoveTo(tubeWillArrive);
-                    tubeToMove -> runAction(seq);
-                    //tubeToMove -> action(tubeWillArrive, 3);
-                    
+                    tubeToMove -> runActionMoveTo(tubeWillArrive);
                     tubeWillArriveStack.popBack();
                     tubeWillArrive = tubeWillArriveStack.back();
                 }
             } else {
-                auto seq = tubeToMove -> actionMoveTo(tubeWillArrive);
-                tubeToMove -> runAction(seq);
-                //tubeToMove -> action(tubeWillArrive, 3);
+                tubeToMove -> runActionMoveTo(tubeWillArrive);
                 tubeWillArriveStack.popBack();
                 tubeWillArrive = tubeWillArriveStack.back();
             }
         }
     }
     if (isMove) {
-        scheduleOnce(schedule_selector(TubeLayer::randomTubeNum), 0.3);
+        scheduleOnce(schedule_selector(TubeLayer::randomTubeNum), 0.25);
     } else {
-        isTouchFinished = true;
+        isMoveFinished = true;
     }
-    return isMove;
-}
-
-bool TubeLayer::isFinished() {
-    for (int y = 0; y < 4; y++) {
-        for (int x = 0; x < 3; x++) {
-            if (tube[y][x] -> getNum() == 0 || tube[y][x] -> getNum() == 0) {
-                return false;
-            }
-            if (tube[y][x] -> getNum() == tube[y][x + 1] -> getNum()) {
-                return false;
-            }
-        }
-    }
-    for (int x = 0; x < 4; x++) {
-        for (int y = 0; y < 3; y++) {
-            if (tube[y][x] -> getNum() == tube[y + 1][x] -> getNum()) {
-                return false;
-            }
-        }
-    }
-    return true;
 }

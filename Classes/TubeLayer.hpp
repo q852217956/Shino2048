@@ -27,12 +27,11 @@ private:
     
     cocos2d::Vec2 touchPoint;
     bool isTouchMoved;
-    bool isTouchFinished;
-    bool moveLeft();
-    bool moveRight();
-    bool moveUp();
-    bool moveDown();
-    bool isFinished();
+    bool isMoveFinished;
+    void moveLeft();
+    void moveRight();
+    void moveUp();
+    void moveDown();
     
     cocos2d::Vec2 setTubePosition(cocos2d::Vec2 tubeCoordinate);
     

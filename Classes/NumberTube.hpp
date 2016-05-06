@@ -23,11 +23,9 @@ public:
     bool setRandomNum();
     
     //动作
-    cocos2d::Sequence *actionMoveTo(NumberTube *tube);
-    cocos2d::Sequence *actionAddBy(NumberTube *tube);
-    cocos2d::Sequence *actionAddTo(NumberTube *tube);
-    
-    void action(NumberTube *tube, int num);
+    void runActionMoveTo(NumberTube *tube);
+    void runActionAddBy(NumberTube *tube);
+    void runActionAddTo(NumberTube *tube);
     
 private:
     

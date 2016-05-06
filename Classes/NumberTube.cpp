@@ -141,50 +141,8 @@ bool NumberTube::setRandomNum() {
     return true;
 }
 
-/*void NumberTube::action(NumberTube *tube, int num) {
-    switch (num) {
-        case 1:
-            if (getNumberOfRunningActions() != 0) {
-                ActionInterval *nowAction = (ActionInterval*)getActionByTag(1);
-                auto delayTime = 0.3 - nowAction -> getElapsed();
-                scheduleOnce([=](float dt){
-                    this -> actionAddBy(tube);
-                }, delayTime, "addBy");
-            } else {
-                actionAddBy(tube);
-            }
-            break;
-        case 2:
-            if (getNumberOfRunningActions() != 0) {
-                ActionInterval *nowAction = (ActionInterval*)getActionByTag(2);
-                auto delayTime = 0.3 - nowAction -> getElapsed();
-                scheduleOnce([=](float dt){
-                    this -> actionAddTo(tube);
-                }, delayTime, "addTo");
-            } else {
-                actionAddTo(tube);
-            }
-            break;
-        case 3:
-            if (getNumberOfRunningActions() != 0) {
-                ActionInterval *nowAction = (ActionInterval*)getActionByTag(3);
-                auto delayTime = 0.3 - nowAction -> getElapsed();
-                log("0%f", Director::getInstance() -> getDeltaTime());
-                scheduleOnce([=](float dt){
-                    this -> actionMoveTo(tube);
-                    log("3%f", Director::getInstance() -> getDeltaTime());
-                }, delayTime, "moveTo");
-            } else {
-                actionMoveTo(tube);
-            }
-            break;
-        default:
-            break;
-    }
-}*/
-
-Sequence *NumberTube::actionMoveTo(NumberTube *tube) {
-    auto move = MoveTo::create(0.06 * tube -> getPosition().distance(getPosition()) / (getContentSize().width + 40), tube -> getPosition());
+void NumberTube::runActionMoveTo(NumberTube *tube) {
+    auto move = MoveTo::create(0.04 * tube -> getPosition().distance(getPosition()) / (getContentSize().width + 40), tube -> getPosition());
     auto delay = DelayTime::create(0.1);
     auto callFunc = CallFunc::create([=]{
         auto tmpNum = getNum();
@@ -193,25 +151,23 @@ Sequence *NumberTube::actionMoveTo(NumberTube *tube) {
     });
     auto place = Place::create(getPosition());
     auto seq = Sequence::create(move, delay, callFunc, place, NULL);
-    //runAction(seq);
-    return seq;
+    this -> runAction(seq);
 }
 
-Sequence *NumberTube::actionAddTo(NumberTube *tube) {
-    auto move = MoveTo::create(0.06 * tube -> getPosition().distance(getPosition()) / (getContentSize().width + 40), tube -> getPosition());
+void NumberTube::runActionAddTo(NumberTube *tube) {
+    auto move = MoveTo::create(0.04 * tube -> getPosition().distance(getPosition()) / (getContentSize().width + 40), tube -> getPosition());
     auto delay = DelayTime::create(0.1);
     auto callFunc = CallFunc::create([=] {
         setNum(0);
     });
     auto place = Place::create(getPosition());
     auto seq = Sequence::create(move, delay, callFunc, place, NULL);
-    //runAction(seq);
-    return seq;
+    this -> runAction(seq);
 }
 
-Sequence *NumberTube::actionAddBy(NumberTube *tube) {
-    auto move = MoveTo::create(0.06 * tube -> getPosition().distance(getPosition()) / (getContentSize().width + 40), tube -> getPosition());
-    auto scale1 = ScaleTo::create(0.05, 1.2);
+void NumberTube::runActionAddBy(NumberTube *tube) {
+    auto move = MoveTo::create(0.04 * tube -> getPosition().distance(getPosition()) / (getContentSize().width + 40), tube -> getPosition());
+    auto scale1 = ScaleTo::create(0.05, 1.4);
     auto scale2 = ScaleTo::create(0.05, 1);
     auto callFunc = CallFunc::create([=]{
         int tmpNum = getNum() * 2;
@@ -220,6 +176,5 @@ Sequence *NumberTube::actionAddBy(NumberTube *tube) {
     });
     auto place = Place::create(getPosition());
     auto seq = Sequence::create(move, scale1, scale2, callFunc, place, NULL);
-    //runAction(seq);
-    return seq;
+    this -> runAction(seq);
 }
