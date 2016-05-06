@@ -171,6 +171,8 @@ void NumberTube::runActionAddBy(NumberTube *tube) {
     auto scale2 = ScaleTo::create(0.05, 1);
     auto callFunc = CallFunc::create([=]{
         int tmpNum = getNum() * 2;
+        GameScene *tmpScene = (GameScene*)Director::getInstance() -> getRunningScene();
+        tmpScene -> setGameScore(tmpNum);
         setNum(0);
         tube -> setNum(tmpNum);
     });

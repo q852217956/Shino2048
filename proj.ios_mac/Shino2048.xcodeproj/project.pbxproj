@@ -177,10 +177,10 @@
 				B4DE1E621CDC59B50056FFB0 /* NumberTube.hpp */,
 				B4DE1E5F1CDC59B50056FFB0 /* GameScene.cpp */,
 				B4DE1E601CDC59B50056FFB0 /* GameScene.hpp */,
-				B4DE1E631CDC59B50056FFB0 /* ScoreScene.cpp */,
-				B4DE1E641CDC59B50056FFB0 /* ScoreScene.hpp */,
 				B4DE1E651CDC59B50056FFB0 /* TubeLayer.cpp */,
 				B4DE1E661CDC59B50056FFB0 /* TubeLayer.hpp */,
+				B4DE1E631CDC59B50056FFB0 /* ScoreScene.cpp */,
+				B4DE1E641CDC59B50056FFB0 /* ScoreScene.hpp */,
 			);
 			name = Classes;
 			path = ../Classes;

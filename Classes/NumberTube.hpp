@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include "cocos2d.h"
+#include "GameScene.hpp"
 
 class NumberTube : public cocos2d::Sprite {
 public:
