@@ -61,7 +61,6 @@ static AppDelegate s_sharedApplication;
 
     // Use RootViewController manage CCEAGLView 
     _viewController = [[RootViewController alloc] initWithNibName:nil bundle:nil];
-    _viewController.wantsFullScreenLayout = YES;
     _viewController.view = eaglView;
 
     // Set RootViewController to window
