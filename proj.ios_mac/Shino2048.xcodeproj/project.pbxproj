@@ -52,7 +52,7 @@
 		B4DE1E681CDC59B50056FFB0 /* NumberTube.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4DE1E611CDC59B50056FFB0 /* NumberTube.cpp */; };
 		B4DE1E691CDC59B50056FFB0 /* ScoreScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4DE1E631CDC59B50056FFB0 /* ScoreScene.cpp */; };
 		B4DE1E6A1CDC59B50056FFB0 /* TubeLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4DE1E651CDC59B50056FFB0 /* TubeLayer.cpp */; };
-		B4DE1E6C1CDC5A6A0056FFB0 /* AppDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4DE1E6B1CDC5A6A0056FFB0 /* AppDelegate.cpp */; };
+		B4E5242B1CDC607E0008EBDF /* AppDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4E5242A1CDC607E0008EBDF /* AppDelegate.cpp */; };
 		BF171245129291EC00B8313A /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF170DB012928DE900B8313A /* OpenGLES.framework */; };
 		BF1712471292920000B8313A /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BF170DB412928DE900B8313A /* libz.dylib */; };
 		BF1C47F01293687400B63C5D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF1C47EA1293683800B63C5D /* QuartzCore.framework */; };
@@ -118,7 +118,7 @@
 		B4DE1E641CDC59B50056FFB0 /* ScoreScene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ScoreScene.hpp; sourceTree = "<group>"; };
 		B4DE1E651CDC59B50056FFB0 /* TubeLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TubeLayer.cpp; sourceTree = "<group>"; };
 		B4DE1E661CDC59B50056FFB0 /* TubeLayer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TubeLayer.hpp; sourceTree = "<group>"; };
-		B4DE1E6B1CDC5A6A0056FFB0 /* AppDelegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AppDelegate.cpp; path = ../proj.ios_mac/AppDelegate.cpp; sourceTree = "<group>"; };
+		B4E5242A1CDC607E0008EBDF /* AppDelegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AppDelegate.cpp; sourceTree = "<group>"; };
 		BF170DB012928DE900B8313A /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		BF170DB412928DE900B8313A /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		BF1C47EA1293683800B63C5D /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -250,7 +250,6 @@
 		46880B8319C43A87006E1F66 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				B4DE1E6B1CDC5A6A0056FFB0 /* AppDelegate.cpp */,
 				B4DE1E5F1CDC59B50056FFB0 /* GameScene.cpp */,
 				B4DE1E601CDC59B50056FFB0 /* GameScene.hpp */,
 				B4DE1E611CDC59B50056FFB0 /* NumberTube.cpp */,
@@ -260,6 +259,7 @@
 				B4DE1E651CDC59B50056FFB0 /* TubeLayer.cpp */,
 				B4DE1E661CDC59B50056FFB0 /* TubeLayer.hpp */,
 				46880B8519C43A87006E1F66 /* AppDelegate.h */,
+				B4E5242A1CDC607E0008EBDF /* AppDelegate.cpp */,
 			);
 			name = Classes;
 			path = ../Classes;
@@ -440,7 +440,7 @@
 				B4DE1E6A1CDC59B50056FFB0 /* TubeLayer.cpp in Sources */,
 				503AE10017EB989F00D1A890 /* AppController.mm in Sources */,
 				503AE10217EB989F00D1A890 /* RootViewController.mm in Sources */,
-				B4DE1E6C1CDC5A6A0056FFB0 /* AppDelegate.cpp in Sources */,
+				B4E5242B1CDC607E0008EBDF /* AppDelegate.cpp in Sources */,
 				B4DE1E671CDC59B50056FFB0 /* GameScene.cpp in Sources */,
 				B4DE1E681CDC59B50056FFB0 /* NumberTube.cpp in Sources */,
 				503AE10117EB989F00D1A890 /* main.m in Sources */,
