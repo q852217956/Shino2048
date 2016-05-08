@@ -29,6 +29,9 @@ private:
     
     NumberTube *tube[4][4];
     
+    void touchInit(cocos2d::Rect touchArea);
+    void labelInit(cocos2d::Rect labelArea);
+    
     void randomTubeNum(float delayTime);
     
     cocos2d::Vec2 touchPoint;
@@ -40,6 +43,10 @@ private:
     void moveDown();
     
     cocos2d::Vec2 setTubePosition(cocos2d::Vec2 tubeCoordinate);
+    
+    cocos2d::Label *scoreLabel;
+    cocos2d::Label *highestScoreLabel;
+    NumberTube *highestTube;
     
     std::vector<int> touchMoveStack;
 };

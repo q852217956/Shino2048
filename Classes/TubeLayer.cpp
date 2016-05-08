@@ -16,22 +16,26 @@ bool TubeLayer::init() {
     }
     
     //自身布局，定义布局尺寸
-    Size screenSize = Director::getInstance() -> getOpenGLView() -> getDesignResolutionSize();
-    Size layerSize = Size(screenSize.width, screenSize.width) - Size(40, 40);
+    Size designSize = Director::getInstance() -> getOpenGLView() -> getDesignResolutionSize();
+    Size gameAreaSize = Size(designSize.width, designSize.width) - Size(40, 40);
+    Rect gameArea = Rect(50, 200, designSize.width - 100, designSize.width - 100);
+    Rect nonGameArea = Rect(50, designSize.width + 200, designSize.width - 100, designSize.height - designSize.width - 230);
     
     //添加背景
     auto background = LayerColor::create(Color4B(180, 170, 160, 255));
     addChild(background);
     
     auto layerBackground = LayerColor::create(Color4B(255, 255, 255, 255));
-    layerBackground -> setContentSize(layerSize);
-    layerBackground -> setPosition(Vec2(20, 80));
+    layerBackground -> setContentSize(gameArea.size);
+    layerBackground -> setPosition(Vec2(50, 200));
     addChild(layerBackground);
+    
+    labelInit(nonGameArea);
     
     //生成4*4方块
     for (int y = 0; y < 4; y++) {
         for (int x = 0; x < 4; x++) {
-            Size tubeSize = layerSize / 4 - Size(20, 20);
+            Size tubeSize = gameAreaSize / 4 - Size(20, 20);
             Vec2 tubePosition = setTubePosition(Vec2(x, y));
             tube[y][x] = NumberTube::create(tubeSize, tubePosition);
             tube[y][x] -> setUpdateDelegator(this);
@@ -44,12 +48,39 @@ bool TubeLayer::init() {
     randomTubeNum(0);
     
     /*绑定触摸事件*/
+    touchInit(gameArea);
+    return true;
+}
+
+void TubeLayer::labelInit(Rect labelArea) {
+    auto scoreBackground = LayerColor::create(Color4B(255, 0, 0, 255));
+    auto labelSize = Size(labelArea.size.width / 3 - 30, labelArea.size.height / 4 - 30);
+    scoreBackground -> setContentSize(labelSize);
+    scoreBackground -> setPosition(Vec2(labelArea.origin.x + labelArea.size.width / 3 + 30,
+                                        labelArea.origin.y + labelArea.size.height / 2 + 30));
+    addChild(scoreBackground);
+    scoreLabel = Label::createWithSystemFont("最高得分：\n0", "Arial", 40);
+    scoreLabel -> setAlignment(TextHAlignment::CENTER, TextVAlignment::CENTER);
+    scoreLabel -> setPosition(Vec2(labelSize.width / 2, labelSize.height / 2));
+    scoreBackground -> addChild(scoreLabel);
+    
+    auto highScoreBackground  = LayerColor::create(Color4B(255, 0, 0, 255));
+    highScoreBackground -> setContentSize(labelSize);
+    highScoreBackground -> setPosition(Vec2(labelArea.origin.x + labelArea.size.width * 2 / 3 + 60,
+                                            labelArea.origin.y + labelArea.size.height / 2 + 30));
+    addChild(highScoreBackground);
+    highestScoreLabel = Label::createWithSystemFont("当前得分：\n0", "Arial", 40);
+    highestScoreLabel -> setAlignment(TextHAlignment::CENTER, TextVAlignment::CENTER);
+    highestScoreLabel -> setPosition(Vec2(labelSize.width / 2, labelSize.height / 2));
+    highScoreBackground -> addChild(highestScoreLabel);
+}
+
+void TubeLayer::touchInit(Rect touchArea) {
     auto touchListener = EventListenerTouchOneByOne::create();
     touchListener -> setSwallowTouches(true);
-    touchListener -> onTouchBegan = [&](Touch *touch, Event *event){
+    touchListener -> onTouchBegan = [&, touchArea](Touch *touch, Event *event){
         touchPoint = touch -> getLocation();
-        auto touchRange = Rect(getPosition(), getContentSize());
-        if (touchRange.containsPoint(touchPoint)) {
+        if (touchArea.containsPoint(touchPoint)) {
             isTouchMoved = false;
             return true;
         } else {
@@ -107,7 +138,6 @@ bool TubeLayer::init() {
             }
         }
     }, "touchMove");
-    return true;
 }
 
 void TubeLayer::updateScore(int num) {
