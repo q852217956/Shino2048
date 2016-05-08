@@ -45,6 +45,10 @@ bool NumberTube::init(Size tubeSize, Vec2 tubePosition) {
     return true;
 }
 
+void NumberTube::setUpdateDelegator(ScoreDelegate *delegator){
+    updateDelegator = delegator;
+}
+
 int NumberTube::getNum() {
     return num;
 }
@@ -167,12 +171,10 @@ void NumberTube::runActionAddTo(NumberTube *tube) {
 
 void NumberTube::runActionAddBy(NumberTube *tube) {
     auto move = MoveTo::create(0.04 * tube -> getPosition().distance(getPosition()) / (getContentSize().width + 40), tube -> getPosition());
-    auto scale1 = ScaleTo::create(0.05, 1.4);
+    auto scale1 = ScaleTo::create(0.05, 1.3);
     auto scale2 = ScaleTo::create(0.05, 1);
     auto callFunc = CallFunc::create([=]{
         int tmpNum = getNum() * 2;
-        GameScene *tmpScene = (GameScene*)Director::getInstance() -> getRunningScene();
-        tmpScene -> setGameScore(tmpNum);
         setNum(0);
         tube -> setNum(tmpNum);
     });

@@ -16,23 +16,25 @@ bool TubeLayer::init() {
     }
     
     //自身布局，定义布局尺寸
-    Size screenSize = Director::getInstance() -> getVisibleSize();
+    Size screenSize = Director::getInstance() -> getOpenGLView() -> getDesignResolutionSize();
     Size layerSize = Size(screenSize.width, screenSize.width) - Size(40, 40);
-    setContentSize(layerSize);
-    setPosition(Vec2(20, 100));
     
     //添加背景
-    auto background = LayerColor::create(Color4B(255, 255, 255, 255));
-    background -> setContentSize(layerSize);
-    background -> setPosition(Vec2(0, 0));
+    auto background = LayerColor::create(Color4B(180, 170, 160, 255));
     addChild(background);
+    
+    auto layerBackground = LayerColor::create(Color4B(255, 255, 255, 255));
+    layerBackground -> setContentSize(layerSize);
+    layerBackground -> setPosition(Vec2(20, 80));
+    addChild(layerBackground);
     
     //生成4*4方块
     for (int y = 0; y < 4; y++) {
         for (int x = 0; x < 4; x++) {
-            Size tubeSize = layerSize / 4 - Size(40, 40);
+            Size tubeSize = layerSize / 4 - Size(20, 20);
             Vec2 tubePosition = setTubePosition(Vec2(x, y));
             tube[y][x] = NumberTube::create(tubeSize, tubePosition);
+            tube[y][x] -> setUpdateDelegator(this);
             addChild(tube[y][x]);
         }
     }
@@ -108,8 +110,20 @@ bool TubeLayer::init() {
     return true;
 }
 
+void TubeLayer::updateScore(int num) {
+    
+}
+
+void TubeLayer::updateHighestScore(int num) {
+    
+}
+
+void TubeLayer::updateHighestTube(int num) {
+    
+}
+
 Vec2 TubeLayer::setTubePosition(Vec2 tubeCoordinate) {
-    auto tubePosition = Vec2(getContentSize().width / 8, getContentSize().height / 8);
+    auto tubePosition = Vec2(getContentSize().width / 8, getContentSize().width / 8);
     tubeCoordinate.scale(2);
     auto scalar = tubeCoordinate + Vec2(1, 1);
     tubePosition.scale(scalar);

@@ -16,30 +16,8 @@ class GameScene : public cocos2d::Scene {
 public:
     
     virtual bool init();
-    
     CREATE_FUNC(GameScene);
     
-    int getGameScore();
-    void setGameScore(int score);
-    
-private:
-    
-    int gameScore;
-    
-};
-
-class GameLayer : public cocos2d::Layer {
-public:
-    
-    virtual bool init();
-    
-    CREATE_FUNC(GameLayer);
-    
-    void setScoreLabelNum(int num);
-    
-private:
-    
-    cocos2d::Label *scoreLabel;
 };
 
 #endif /* GameScene_hpp */

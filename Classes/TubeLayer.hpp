@@ -13,12 +13,18 @@
 
 #include "cocos2d.h"
 #include "NumberTube.hpp"
+#include "ScoreDelegate.h"
 
-class TubeLayer : public cocos2d::Layer {
+class TubeLayer : public cocos2d::Layer, public ScoreDelegate {
 public:
-    virtual bool init();
     
+    virtual bool init();
     CREATE_FUNC(TubeLayer);
+    
+    virtual void updateScore(int num);
+    virtual void updateHighestScore(int num);
+    virtual void updateHighestTube(int num);
+    
 private:
     
     NumberTube *tube[4][4];

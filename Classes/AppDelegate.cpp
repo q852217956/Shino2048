@@ -27,11 +27,11 @@ bool AppDelegate::applicationDidFinishLaunching() {
     auto director = Director::getInstance();
     auto glview = director->getOpenGLView();
     if(!glview) {
-        glview = GLViewImpl::createWithRect("2048", Rect(0, 0, 640, 1136));
+        glview = GLViewImpl::create("2048");
         director->setOpenGLView(glview);
     }
 
-    director->getOpenGLView()->setDesignResolutionSize(640, 1136, ResolutionPolicy::SHOW_ALL);
+    director->getOpenGLView()->setDesignResolutionSize(720, 1280, ResolutionPolicy::FIXED_WIDTH);
 
     // turn on display FPS
     director->setDisplayStats(true);
