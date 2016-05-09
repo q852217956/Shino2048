@@ -21,10 +21,10 @@ bool TubeLayer::init() {
     Rect nonGameArea = Rect(40, designSize.width + 120, designSize.width - 80, designSize.height - designSize.width - 200);
     
     //添加背景
-    auto background = LayerColor::create(Color4B(180, 170, 160, 255));
+    auto background = LayerColor::create(Color4B(0, 255, 224, 255));
     addChild(background);
     
-    auto layerBackground = LayerColor::create(Color4B(255, 255, 255, 255));
+    auto layerBackground = LayerColor::create(Color4B(240, 255, 224, 255));
     layerBackground -> setContentSize(gameArea.size);
     layerBackground -> setPosition(gameArea.origin);
     addChild(layerBackground);
@@ -46,7 +46,7 @@ void TubeLayer::labelInit(Rect labelArea) {
     highestTube -> setNum(highestTubeNum);
     addChild(highestTube);
     
-    auto highestScoreBackground = LayerColor::create(Color4B(255, 0, 0, 255));
+    auto highestScoreBackground = LayerColor::create(Color4B(0, 224, 224, 255));
     highestScoreBackground -> setContentSize(Size(tubeSize.width, (tubeSize.height - 30) * 2 / 3));
     highestScoreBackground -> setPosition(Vec2(tubeSize.width + labelArea.origin.x + 40, labelArea.getMaxY() - (tubeSize.height - 30) * 2 / 3));
     addChild(highestScoreBackground);
@@ -55,7 +55,7 @@ void TubeLayer::labelInit(Rect labelArea) {
     highestScoreLabel -> setPosition(Vec2(highestScoreBackground -> getContentSize().width / 2, highestScoreBackground -> getContentSize().height / 2));
     highestScoreBackground -> addChild(highestScoreLabel);
     
-    auto scoreBackground = LayerColor::create(Color4B(255, 0, 0, 255));
+    auto scoreBackground = LayerColor::create(Color4B(0, 224, 224, 255));
     scoreBackground -> setContentSize(Size(tubeSize.width, (tubeSize.height - 30) * 2 / 3));
     scoreBackground -> setPosition(Vec2(tubeSize.width * 2 + 80 + labelArea.origin.x, labelArea.getMaxY() - (tubeSize.height - 30) * 2 / 3));
     addChild(scoreBackground);

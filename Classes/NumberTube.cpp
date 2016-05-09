@@ -56,77 +56,65 @@ int NumberTube::getNum() {
 bool NumberTube::setNum(int value) {
     num = value;
     numLabel -> setString(std::to_string(value));
+    if (value == 0) {
+        setVisible(false);
+    } else {
+        setVisible(true);
+    }
     switch (value) {
         case 0:
-            setVisible(false);
+            background -> setColor(Color3B(240, 230, 224));
             break;
         case 2:
-            background -> setColor(Color3B(250, 232, 225));
-            setVisible(true);
+            background -> setColor(Color3B(0, 224, 224));
             break;
         case 4:
-            background -> setColor(Color3B(250, 229, 204));
-            setVisible(true);
+            background -> setColor(Color3B(0, 206, 224));
             break;
         case 8:
-            background -> setColor(Color3B(250, 180, 130));
-            setVisible(true);
+            background -> setColor(Color3B(0, 179, 224));
             break;
         case 16:
-            background -> setColor(Color3B(236, 142, 92));
-            setVisible(true);
+            background -> setColor(Color3B(0, 152, 224));
             break;
         case 32:
-            background -> setColor(Color3B(244, 124, 100));
-            setVisible(true);
+            background -> setColor(Color3B(0, 125, 224));
             break;
         case 64:
-            background -> setColor(Color3B(250, 92, 73));
-            setVisible(true);
+            background -> setColor(Color3B(0, 98, 224));
             break;
         case 128:
-            background -> setColor(Color3B(251, 209, 125));
-            setVisible(true);
+            background -> setColor(Color3B(0, 62, 224));
             break;
         case 256:
-            background -> setColor(Color3B(249, 107, 111));
-            setVisible(true);
+            background -> setColor(Color3B(0, 8, 224));
             break;
         case 512:
-            background -> setColor(Color3B(248, 202, 99));
-            setVisible(true);
+            background -> setColor(Color3B(89, 8, 224));
             break;
         case 1024:
-            background -> setColor(Color3B(227, 185, 48));
-            setVisible(true);
+            background -> setColor(Color3B(125, 8, 224));
             break;
         case 2048:
-            background -> setColor(Color3B(248, 195, 64));
-            setVisible(true);
+            background -> setColor(Color3B(168, 8, 224));
             break;
         case 4096:
-            background -> setColor(Color3B(243, 109, 115));
-            setVisible(true);
+            background -> setColor(Color3B(197, 8, 224));
             break;
         case 8192:
-            background -> setColor(Color3B(239, 78, 100));
-            setVisible(true);
+            background -> setColor(Color3B(233, 8, 224));
             break;
         case 16384:
-            background -> setColor(Color3B(234, 67, 70));
-            setVisible(true);
+            background -> setColor(Color3B(233, 8, 146));
             break;
         case 32768:
-            background -> setColor(Color3B(118, 182, 220));
-            setVisible(true);
+            background -> setColor(Color3B(233, 8, 111));
             break;
         case 65536:
-            background -> setColor(Color3B(97, 162, 225));
-            setVisible(true);
+            background -> setColor(Color3B(233, 8, 83));
             break;
         case 131072:
-            background -> setColor(Color3B(19, 129, 193));
-            setVisible(true);
+            background -> setColor(Color3B(233, 8, 43));
             break;
         default:
             return false;
