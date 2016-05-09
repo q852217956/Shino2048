@@ -22,15 +22,14 @@ public:
     CREATE_FUNC(TubeLayer);
     
     virtual void updateScore(int num);
-    virtual void updateHighestScore(int num);
-    virtual void updateHighestTube(int num);
-    
+
 private:
     
     NumberTube *tube[4][4];
     
     void touchInit(cocos2d::Rect touchArea);
     void labelInit(cocos2d::Rect labelArea);
+    void tubeInit(cocos2d::Rect tubeArea);
     
     void randomTubeNum(float delayTime);
     
@@ -42,11 +41,12 @@ private:
     void moveUp();
     void moveDown();
     
-    cocos2d::Vec2 setTubePosition(cocos2d::Vec2 tubeCoordinate);
-    
     cocos2d::Label *scoreLabel;
     cocos2d::Label *highestScoreLabel;
     NumberTube *highestTube;
+    
+    int score;
+    int highestTubeNum;
     
     std::vector<int> touchMoveStack;
 };

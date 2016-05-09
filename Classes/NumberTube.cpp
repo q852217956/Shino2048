@@ -175,6 +175,7 @@ void NumberTube::runActionAddBy(NumberTube *tube) {
     auto scale2 = ScaleTo::create(0.05, 1);
     auto callFunc = CallFunc::create([=]{
         int tmpNum = getNum() * 2;
+        updateDelegator -> updateScore(tmpNum);
         setNum(0);
         tube -> setNum(tmpNum);
     });

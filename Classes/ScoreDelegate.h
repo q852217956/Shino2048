@@ -16,10 +16,6 @@ public:
     virtual ~ScoreDelegate() {}
     
     virtual void updateScore(int num) = 0;
-    
-    virtual void updateHighestScore(int num) = 0;
-    
-    virtual void updateHighestTube(int num) = 0;
 };
 
 #endif /* ScoreDelegate_h */
