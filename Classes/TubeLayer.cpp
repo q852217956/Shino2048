@@ -26,14 +26,14 @@ bool TubeLayer::init() {
     Rect gameArea = Rect(TUUBE_MARGIN * 2, GAME_AREA_HEIGHT,
                          designSize.width - TUUBE_MARGIN * 4, designSize.width - TUUBE_MARGIN * 4);
     Rect nonGameArea = Rect(TUUBE_MARGIN * 2, designSize.width + TUUBE_MARGIN + GAME_AREA_HEIGHT,
-                            designSize.width - TUUBE_MARGIN * 4, designSize.height - designSize.width - TUUBE_MARGIN * 2 - GAME_AREA_HEIGHT);
+                            designSize.width - TUUBE_MARGIN * 4, designSize.height - designSize.width - TUUBE_MARGIN * 4 - GAME_AREA_HEIGHT);
     
     //添加背景颜色
     auto background = LayerColor::create(Color4B(0, 255, 224, 255));
     addChild(background);
     
     //添加游戏区域背景
-    auto layerBackground = LayerColor::create(Color4B(240, 255, 224, 255));
+    auto layerBackground = LayerColor::create(Color4B(0, 197, 197, 255));
     layerBackground -> setContentSize(gameArea.size);
     layerBackground -> setPosition(gameArea.origin);
     addChild(layerBackground);
@@ -59,7 +59,7 @@ void TubeLayer::labelInit(Rect labelArea) {
     addChild(highestTube);
     
     //最高分
-    auto highestScoreBackground = LayerColor::create(Color4B(0, 224, 224, 255));
+    auto highestScoreBackground = LayerColor::create(Color4B(0, 179, 224, 255));
     highestScoreBackground -> setContentSize(Size(labelSize.width, (labelSize.height - TUUBE_MARGIN) * 2 / 3));
     highestScoreBackground -> setPosition(Vec2(labelSize.width + labelArea.origin.x + TUUBE_MARGIN * 2,
                                                labelArea.getMaxY() - (labelSize.height - TUUBE_MARGIN) * 2 / 3));
@@ -71,7 +71,7 @@ void TubeLayer::labelInit(Rect labelArea) {
     highestScoreBackground -> addChild(highestScoreLabel);
     
     //当前分数
-    auto scoreBackground = LayerColor::create(Color4B(0, 224, 224, 255));
+    auto scoreBackground = LayerColor::create(Color4B(0, 179, 224, 255));
     scoreBackground -> setContentSize(Size(labelSize.width, (labelSize.height - TUUBE_MARGIN) * 2 / 3));
     scoreBackground -> setPosition(Vec2(labelSize.width * 2 + TUUBE_MARGIN * 2 * 2 + labelArea.origin.x,
                                         labelArea.getMaxY() - (labelSize.height - TUUBE_MARGIN) * 2 / 3));
@@ -84,7 +84,7 @@ void TubeLayer::labelInit(Rect labelArea) {
     scoreBackground -> addChild(scoreLabel);
     
     auto nextTubeNum = Value(highestTube -> getNum() * 2).asString();
-    message = Label::createWithSystemFont("您的目标是 " + nextTubeNum + " 分", "Arial", 60);
+    message = Label::createWithSystemFont("您的现在的目标是 " + nextTubeNum, "Arial", 60);
     message -> setAlignment(TextHAlignment::CENTER, TextVAlignment::CENTER);
     message -> setPosition(Vec2(labelArea.getMidX(), labelArea.getMinY() + 40));
     addChild(message);
@@ -94,6 +94,20 @@ void TubeLayer::tubeInit(Rect tubeArea) {
     Size tubeSize = Size((tubeArea.size.width - 100) / 4, (tubeArea.size.height - 100) / 4);
     for (int y = 0; y < 4; y++) {
         for (int x = 0; x < 4; x++) {
+            Vec2 tubePosition = Vec2(tubeSize / 2);
+            tubePosition.scale(Vec2(x * 2 + 1, y * 2 + 1));
+            tubePosition = tubePosition + tubeArea.origin + Vec2(20 * (x + 1), 20 * (y + 1));
+            auto tubeBackground = LayerColor::create(Color4B(174, 251, 251, 255));
+            tubeBackground -> setContentSize(tubeSize);
+            tubeBackground -> ignoreAnchorPointForPosition(false);
+            tubeBackground -> setAnchorPoint(Vec2(0.5, 0.5));
+            tubeBackground -> setPosition(tubePosition);
+            log("background position: %f, %f", tubePosition.x, tubePosition.y);
+            addChild(tubeBackground);
+        }
+    }
+    for (int y = 0; y < 4; y++) {
+        for (int x = 0; x < 4; x++) {
             /* 等边距布局，以横向为例：
                     第n个方块位置 = 方块边距 * n + 方块尺寸 / 2 * (2 * n - 1) + 游戏区域偏移 */
             Vec2 tubePosition = Vec2(tubeSize / 2);
@@ -101,6 +115,7 @@ void TubeLayer::tubeInit(Rect tubeArea) {
             tubePosition = tubePosition + tubeArea.origin + Vec2(20 * (x + 1), 20 * (y + 1));
             tube[y][x] = NumberTube::create(tubeSize, tubePosition);
             tube[y][x] -> setUpdateDelegator(this);
+            log("tube position: %f, %f", tubePosition.x, tubePosition.y);
             addChild(tube[y][x]);
         }
     }
@@ -187,6 +202,8 @@ void TubeLayer::updateScore(int num) {
     if (num > highestTubeNum) {
         highestTubeNum = num;
         highestTube -> setNum(highestTubeNum);
+        auto nextTubeNum = Value(num * 2).asString();
+        message -> setString("您的现在的目标是 " + nextTubeNum);
     }
 }
 
@@ -219,8 +236,10 @@ void TubeLayer::randomTubeNum(float delayTime) {
     if(!tubeToRandom.empty()) {
         //只从数字为0的空方块中随机生成新的数字
         tubeToRandom.getRandomObject() -> setRandomNum();
+        scheduleOnce([&](float dt){
+            isMoveFinished = true;
+        }, 0.03, "randomDelay");
     }
-    isMoveFinished = true;
 }
 
 void TubeLayer::moveLeft() {

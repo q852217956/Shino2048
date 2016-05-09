@@ -70,52 +70,52 @@ bool NumberTube::setNum(int value) {
             background -> setColor(Color3B(0, 224, 224));
             break;
         case 4:
-            background -> setColor(Color3B(0, 206, 224));
-            break;
-        case 8:
-            background -> setColor(Color3B(0, 179, 224));
-            break;
-        case 16:
-            background -> setColor(Color3B(0, 152, 224));
-            break;
-        case 32:
             background -> setColor(Color3B(0, 125, 224));
             break;
-        case 64:
-            background -> setColor(Color3B(0, 98, 224));
-            break;
-        case 128:
+        case 8:
             background -> setColor(Color3B(0, 62, 224));
             break;
-        case 256:
-            background -> setColor(Color3B(0, 8, 224));
-            break;
-        case 512:
+        case 16:
             background -> setColor(Color3B(89, 8, 224));
             break;
-        case 1024:
+        case 32:
             background -> setColor(Color3B(125, 8, 224));
             break;
-        case 2048:
-            background -> setColor(Color3B(168, 8, 224));
-            break;
-        case 4096:
+        case 64:
             background -> setColor(Color3B(197, 8, 224));
             break;
-        case 8192:
+        case 128:
             background -> setColor(Color3B(233, 8, 224));
             break;
-        case 16384:
+        case 256:
             background -> setColor(Color3B(233, 8, 146));
             break;
-        case 32768:
+        case 512:
             background -> setColor(Color3B(233, 8, 111));
             break;
-        case 65536:
+        case 1024:
             background -> setColor(Color3B(233, 8, 83));
             break;
+        case 2048:
+            background -> setColor(Color3B(197, 8, 83));
+            break;
+        case 4096:
+            background -> setColor(Color3B(116, 8, 83));
+            break;
+        case 8192:
+            background -> setColor(Color3B(53, 8, 83));
+            break;
+        case 16384:
+            background -> setColor(Color3B(53, 71, 83));
+            break;
+        case 32768:
+            background -> setColor(Color3B(53, 116, 83));
+            break;
+        case 65536:
+            background -> setColor(Color3B(53, 179, 83));
+            break;
         case 131072:
-            background -> setColor(Color3B(233, 8, 43));
+            background -> setColor(Color3B(53, 255, 83));
             break;
         default:
             return false;
@@ -131,7 +131,13 @@ bool NumberTube::setRandomNum() {
     } else {
         tmpNum = 2;
     }
-    setNum(tmpNum);
+    auto callFunc = CallFunc::create([=]{
+        this -> setScale(0.1);
+        this -> setNum(tmpNum);
+    });
+    auto scale = ScaleTo::create(0.03, 1);
+    auto seq = Sequence::create(callFunc, scale, NULL);
+    this -> runAction(seq);
     return true;
 }
 
@@ -161,7 +167,7 @@ void NumberTube::runActionAddTo(NumberTube *tube) {
 
 void NumberTube::runActionAddBy(NumberTube *tube) {
     auto move = MoveTo::create(0.04 * tube -> getPosition().distance(getPosition()) / (getContentSize().width + 40), tube -> getPosition());
-    auto scale1 = ScaleTo::create(0.05, 1.3);
+    auto scale1 = ScaleTo::create(0.05, 1.4);
     auto scale2 = ScaleTo::create(0.05, 1);
     auto callFunc = CallFunc::create([=]{
         int tmpNum = getNum() * 2;
