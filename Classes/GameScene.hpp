@@ -16,16 +16,8 @@ class GameScene : public cocos2d::Scene {
 public:
     
     virtual bool init();
-    
     CREATE_FUNC(GameScene);
-};
-
-class GameLayer : public cocos2d::Layer {
-public:
     
-    virtual bool init();
-    
-    CREATE_FUNC(GameLayer);
 };
 
 #endif /* GameScene_hpp */

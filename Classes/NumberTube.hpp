@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include "cocos2d.h"
+#include "ScoreDelegate.h"
 
 class NumberTube : public cocos2d::Sprite {
 public:
@@ -27,11 +28,15 @@ public:
     void runActionAddBy(NumberTube *tube);
     void runActionAddTo(NumberTube *tube);
     
+    void setUpdateDelegator(ScoreDelegate *delegator);
+    
 private:
     
     int num;
     cocos2d::LayerColor *background;
     cocos2d::Label *numLabel;
+    
+    ScoreDelegate *updateDelegator;
     
     void nullFunc();
 };

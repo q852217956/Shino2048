@@ -13,15 +13,23 @@
 
 #include "cocos2d.h"
 #include "NumberTube.hpp"
+#include "ScoreDelegate.h"
 
-class TubeLayer : public cocos2d::Layer {
+class TubeLayer : public cocos2d::Layer, public ScoreDelegate {
 public:
-    virtual bool init();
     
+    virtual bool init();
     CREATE_FUNC(TubeLayer);
+    
+    virtual void updateScore(int num);
+
 private:
     
     NumberTube *tube[4][4];
+    
+    void touchInit(cocos2d::Rect touchArea);
+    void labelInit(cocos2d::Rect labelArea);
+    void tubeInit(cocos2d::Rect tubeArea);
     
     void randomTubeNum(float delayTime);
     
@@ -33,7 +41,13 @@ private:
     void moveUp();
     void moveDown();
     
-    cocos2d::Vec2 setTubePosition(cocos2d::Vec2 tubeCoordinate);
+    cocos2d::Label *scoreLabel;
+    cocos2d::Label *highestScoreLabel;
+    cocos2d::Label *message;
+    NumberTube *highestTube;
+    
+    int score;
+    int highestTubeNum;
     
     std::vector<int> touchMoveStack;
 };

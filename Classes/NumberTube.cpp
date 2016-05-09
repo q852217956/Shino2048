@@ -10,6 +10,7 @@
 
 USING_NS_CC;
 
+//根距CREATE_FUNC宏重载creat()函数
 NumberTube* NumberTube::create(cocos2d::Size tubeSize, cocos2d::Vec2 tubePosition) {
     auto tmpNumberTube = new NumberTube();
     if (tmpNumberTube -> init(tubeSize, tubePosition)) {
@@ -45,84 +46,76 @@ bool NumberTube::init(Size tubeSize, Vec2 tubePosition) {
     return true;
 }
 
+void NumberTube::setUpdateDelegator(ScoreDelegate *delegator){
+    updateDelegator = delegator;
+}
+
 int NumberTube::getNum() {
     return num;
 }
 
 bool NumberTube::setNum(int value) {
     num = value;
-    numLabel -> setString(std::to_string(value));
-    switch (value) {
+    numLabel -> setString(Value(num).asString());
+    if (value == 0) {
+        setVisible(false);
+    } else {
+        setVisible(true);
+    }
+    switch (num) {
         case 0:
-            setVisible(false);
+            background -> setColor(Color3B(240, 230, 224));
             break;
         case 2:
-            background -> setColor(Color3B(250, 232, 225));
-            setVisible(true);
+            background -> setColor(Color3B(0, 224, 224));
             break;
         case 4:
-            background -> setColor(Color3B(250, 229, 204));
-            setVisible(true);
+            background -> setColor(Color3B(0, 125, 224));
             break;
         case 8:
-            background -> setColor(Color3B(250, 180, 130));
-            setVisible(true);
+            background -> setColor(Color3B(0, 62, 224));
             break;
         case 16:
-            background -> setColor(Color3B(236, 142, 92));
-            setVisible(true);
+            background -> setColor(Color3B(89, 8, 224));
             break;
         case 32:
-            background -> setColor(Color3B(244, 124, 100));
-            setVisible(true);
+            background -> setColor(Color3B(125, 8, 224));
             break;
         case 64:
-            background -> setColor(Color3B(250, 92, 73));
-            setVisible(true);
+            background -> setColor(Color3B(197, 8, 224));
             break;
         case 128:
-            background -> setColor(Color3B(251, 209, 125));
-            setVisible(true);
+            background -> setColor(Color3B(233, 8, 224));
             break;
         case 256:
-            background -> setColor(Color3B(249, 107, 111));
-            setVisible(true);
+            background -> setColor(Color3B(233, 8, 146));
             break;
         case 512:
-            background -> setColor(Color3B(248, 202, 99));
-            setVisible(true);
+            background -> setColor(Color3B(233, 8, 111));
             break;
         case 1024:
-            background -> setColor(Color3B(227, 185, 48));
-            setVisible(true);
+            background -> setColor(Color3B(233, 8, 83));
             break;
         case 2048:
-            background -> setColor(Color3B(248, 195, 64));
-            setVisible(true);
+            background -> setColor(Color3B(197, 8, 83));
             break;
         case 4096:
-            background -> setColor(Color3B(243, 109, 115));
-            setVisible(true);
+            background -> setColor(Color3B(116, 8, 83));
             break;
         case 8192:
-            background -> setColor(Color3B(239, 78, 100));
-            setVisible(true);
+            background -> setColor(Color3B(53, 8, 83));
             break;
         case 16384:
-            background -> setColor(Color3B(234, 67, 70));
-            setVisible(true);
+            background -> setColor(Color3B(53, 71, 83));
             break;
         case 32768:
-            background -> setColor(Color3B(118, 182, 220));
-            setVisible(true);
+            background -> setColor(Color3B(53, 116, 83));
             break;
         case 65536:
-            background -> setColor(Color3B(97, 162, 225));
-            setVisible(true);
+            background -> setColor(Color3B(53, 179, 83));
             break;
         case 131072:
-            background -> setColor(Color3B(19, 129, 193));
-            setVisible(true);
+            background -> setColor(Color3B(53, 255, 83));
             break;
         default:
             return false;
@@ -132,12 +125,19 @@ bool NumberTube::setNum(int value) {
 
 bool NumberTube::setRandomNum() {
     int tmpNum;
+    //2和4出现的比例为9:1
     if (CCRANDOM_0_1() * 10 < 1) {
         tmpNum = 4;
     } else {
         tmpNum = 2;
     }
-    setNum(tmpNum);
+    auto callFunc = CallFunc::create([=]{
+        this -> setScale(0.1);
+        this -> setNum(tmpNum);
+    });
+    auto scale = ScaleTo::create(0.03, 1);
+    auto seq = Sequence::create(callFunc, scale, NULL);
+    this -> runAction(seq);
     return true;
 }
 
@@ -171,6 +171,7 @@ void NumberTube::runActionAddBy(NumberTube *tube) {
     auto scale2 = ScaleTo::create(0.05, 1);
     auto callFunc = CallFunc::create([=]{
         int tmpNum = getNum() * 2;
+        updateDelegator -> updateScore(tmpNum);
         setNum(0);
         tube -> setNum(tmpNum);
     });
