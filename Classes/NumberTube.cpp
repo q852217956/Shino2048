@@ -10,6 +10,7 @@
 
 USING_NS_CC;
 
+//根距CREATE_FUNC宏重载creat()函数
 NumberTube* NumberTube::create(cocos2d::Size tubeSize, cocos2d::Vec2 tubePosition) {
     auto tmpNumberTube = new NumberTube();
     if (tmpNumberTube -> init(tubeSize, tubePosition)) {
@@ -55,13 +56,13 @@ int NumberTube::getNum() {
 
 bool NumberTube::setNum(int value) {
     num = value;
-    numLabel -> setString(std::to_string(value));
+    numLabel -> setString(Value(num).asString());
     if (value == 0) {
         setVisible(false);
     } else {
         setVisible(true);
     }
-    switch (value) {
+    switch (num) {
         case 0:
             background -> setColor(Color3B(240, 230, 224));
             break;
@@ -124,6 +125,7 @@ bool NumberTube::setNum(int value) {
 
 bool NumberTube::setRandomNum() {
     int tmpNum;
+    //2和4出现的比例为9:1
     if (CCRANDOM_0_1() * 10 < 1) {
         tmpNum = 4;
     } else {

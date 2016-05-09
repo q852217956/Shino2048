@@ -43,6 +43,7 @@ private:
     
     cocos2d::Label *scoreLabel;
     cocos2d::Label *highestScoreLabel;
+    cocos2d::Label *message;
     NumberTube *highestTube;
     
     int score;

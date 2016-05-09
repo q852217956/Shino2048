@@ -10,6 +10,12 @@
 
 USING_NS_CC;
 
+//定义边距
+#define TUUBE_MARGIN 20
+#define GAME_AREA_HEIGHT 120
+
+
+
 bool TubeLayer::init() {
     if (!Layer::init()) {
         return false;
@@ -17,21 +23,25 @@ bool TubeLayer::init() {
     
     //自身布局，定义布局尺寸
     Size designSize = Director::getInstance() -> getOpenGLView() -> getDesignResolutionSize();
-    Rect gameArea = Rect(40, 120, designSize.width - 80, designSize.width - 80);
-    Rect nonGameArea = Rect(40, designSize.width + 120, designSize.width - 80, designSize.height - designSize.width - 200);
+    Rect gameArea = Rect(TUUBE_MARGIN * 2, GAME_AREA_HEIGHT,
+                         designSize.width - TUUBE_MARGIN * 4, designSize.width - TUUBE_MARGIN * 4);
+    Rect nonGameArea = Rect(TUUBE_MARGIN * 2, designSize.width + TUUBE_MARGIN + GAME_AREA_HEIGHT,
+                            designSize.width - TUUBE_MARGIN * 4, designSize.height - designSize.width - TUUBE_MARGIN * 2 - GAME_AREA_HEIGHT);
     
-    //添加背景
+    //添加背景颜色
     auto background = LayerColor::create(Color4B(0, 255, 224, 255));
     addChild(background);
     
+    //添加游戏区域背景
     auto layerBackground = LayerColor::create(Color4B(240, 255, 224, 255));
     layerBackground -> setContentSize(gameArea.size);
     layerBackground -> setPosition(gameArea.origin);
     addChild(layerBackground);
     
+    //添加分数标签、当前最大方块
     labelInit(nonGameArea);
     
-    //生成4*4方块
+    //生成4*4方块及方块背景
     tubeInit(gameArea);
     
     /*绑定触摸事件*/
@@ -40,33 +50,41 @@ bool TubeLayer::init() {
 }
 
 void TubeLayer::labelInit(Rect labelArea) {
-    auto tubeSize = Size((labelArea.size.width - 80) / 3, (labelArea.size.width - 80) / 3);
-    highestTube = NumberTube::create(tubeSize, Vec2(tubeSize.width / 2 + labelArea.origin.x, labelArea.getMaxY() - tubeSize.height / 2));
+    //当前最大方块
+    auto labelSize = Size((labelArea.size.width - TUUBE_MARGIN * 4) / 3, (labelArea.size.width - TUUBE_MARGIN * 4) / 3);
+    highestTube = NumberTube::create(labelSize,
+                                     Vec2(labelSize.width / 2 + labelArea.origin.x, labelArea.getMaxY() - labelSize.height / 2));
     highestTubeNum = 2;
     highestTube -> setNum(highestTubeNum);
     addChild(highestTube);
     
+    //最高分
     auto highestScoreBackground = LayerColor::create(Color4B(0, 224, 224, 255));
-    highestScoreBackground -> setContentSize(Size(tubeSize.width, (tubeSize.height - 30) * 2 / 3));
-    highestScoreBackground -> setPosition(Vec2(tubeSize.width + labelArea.origin.x + 40, labelArea.getMaxY() - (tubeSize.height - 30) * 2 / 3));
+    highestScoreBackground -> setContentSize(Size(labelSize.width, (labelSize.height - TUUBE_MARGIN) * 2 / 3));
+    highestScoreBackground -> setPosition(Vec2(labelSize.width + labelArea.origin.x + TUUBE_MARGIN * 2,
+                                               labelArea.getMaxY() - (labelSize.height - TUUBE_MARGIN) * 2 / 3));
     addChild(highestScoreBackground);
     highestScoreLabel = Label::createWithSystemFont("最高得分\n0", "Arial", 40);
     highestScoreLabel -> setAlignment(TextHAlignment::CENTER, TextVAlignment::CENTER);
-    highestScoreLabel -> setPosition(Vec2(highestScoreBackground -> getContentSize().width / 2, highestScoreBackground -> getContentSize().height / 2));
+    highestScoreLabel -> setPosition(Vec2(highestScoreBackground -> getContentSize().width / 2,
+                                          highestScoreBackground -> getContentSize().height / 2));
     highestScoreBackground -> addChild(highestScoreLabel);
     
+    //当前分数
     auto scoreBackground = LayerColor::create(Color4B(0, 224, 224, 255));
-    scoreBackground -> setContentSize(Size(tubeSize.width, (tubeSize.height - 30) * 2 / 3));
-    scoreBackground -> setPosition(Vec2(tubeSize.width * 2 + 80 + labelArea.origin.x, labelArea.getMaxY() - (tubeSize.height - 30) * 2 / 3));
+    scoreBackground -> setContentSize(Size(labelSize.width, (labelSize.height - TUUBE_MARGIN) * 2 / 3));
+    scoreBackground -> setPosition(Vec2(labelSize.width * 2 + TUUBE_MARGIN * 2 * 2 + labelArea.origin.x,
+                                        labelArea.getMaxY() - (labelSize.height - TUUBE_MARGIN) * 2 / 3));
     addChild(scoreBackground);
     score = 0;
-    auto tmpStr = Value(score).asString();
-    scoreLabel = Label::createWithSystemFont("当前得分\n" + tmpStr, "Arial", 40);
+    auto scoreStr = Value(score).asString();
+    scoreLabel = Label::createWithSystemFont("当前得分\n" + scoreStr, "Arial", 40);
     scoreLabel -> setAlignment(TextHAlignment::CENTER, TextVAlignment::CENTER);
     scoreLabel -> setPosition(highestScoreLabel -> getPosition());
     scoreBackground -> addChild(scoreLabel);
     
-    auto message = Label::createWithSystemFont("您的目标是 4096 分", "Arial", 60);
+    auto nextTubeNum = Value(highestTube -> getNum() * 2).asString();
+    message = Label::createWithSystemFont("您的目标是 " + nextTubeNum + " 分", "Arial", 60);
     message -> setAlignment(TextHAlignment::CENTER, TextVAlignment::CENTER);
     message -> setPosition(Vec2(labelArea.getMidX(), labelArea.getMinY() + 40));
     addChild(message);
@@ -76,16 +94,17 @@ void TubeLayer::tubeInit(Rect tubeArea) {
     Size tubeSize = Size((tubeArea.size.width - 100) / 4, (tubeArea.size.height - 100) / 4);
     for (int y = 0; y < 4; y++) {
         for (int x = 0; x < 4; x++) {
-            Vec2 tubePosition = Vec2(tubeSize.width / 2, tubeSize.width / 2);
-            Vec2 tubeCoordinate = Vec2(x * 2, y * 2);
-            auto scalar = tubeCoordinate + Vec2(1, 1);
-            tubePosition.scale(scalar);
+            /* 等边距布局，以横向为例：
+                    第n个方块位置 = 方块边距 * n + 方块尺寸 / 2 * (2 * n - 1) + 游戏区域偏移 */
+            Vec2 tubePosition = Vec2(tubeSize / 2);
+            tubePosition.scale(Vec2(x * 2 + 1, y * 2 + 1));
             tubePosition = tubePosition + tubeArea.origin + Vec2(20 * (x + 1), 20 * (y + 1));
             tube[y][x] = NumberTube::create(tubeSize, tubePosition);
             tube[y][x] -> setUpdateDelegator(this);
             addChild(tube[y][x]);
         }
     }
+    
     //游戏开始时生成两个方块
     randomTubeNum(0);
     randomTubeNum(0);
@@ -96,6 +115,7 @@ void TubeLayer::touchInit(Rect touchArea) {
     touchListener -> setSwallowTouches(true);
     touchListener -> onTouchBegan = [&, touchArea](Touch *touch, Event *event){
         touchPoint = touch -> getLocation();
+        //判断是否在游戏区域内触摸
         if (touchArea.containsPoint(touchPoint)) {
             isTouchMoved = false;
             return true;
@@ -106,11 +126,14 @@ void TubeLayer::touchInit(Rect touchArea) {
     touchListener -> onTouchMoved = [&](Touch *touch, Event *event){
         auto currentPoint = touch -> getLocation();
         auto moveDistance = Vec2(touchPoint, currentPoint);
+        //滑动距离大于100像素即触发滑动判定
         if (moveDistance.length() > 100 && isTouchMoved == false) {
             int moveDirection;
             if (std::abs(moveDistance.x) > std::abs(moveDistance.y)) {
                 if (moveDistance.x > 0) {
+                    //1为向左，2为向右，3为向上，4为向下
                     moveDirection = 2;
+                    //每次滑动操作进入到滑动队列，防止同时处理多次操作
                     touchMoveStack.push_back(moveDirection);
                 } else {
                     moveDirection = 1;
@@ -131,6 +154,7 @@ void TubeLayer::touchInit(Rect touchArea) {
     auto eventDispatcher = Director::getInstance() -> getEventDispatcher();
     eventDispatcher -> addEventListenerWithSceneGraphPriority(touchListener, this);
     
+    //每桢检查滑动队列状态，如果滑动队列不为空，且上一次滑动动画结束，则进行下一次动画
     schedule([=](float dt){
         if (!touchMoveStack.empty() && isMoveFinished == true){
             isMoveFinished = false;
@@ -193,6 +217,7 @@ void TubeLayer::randomTubeNum(float delayTime) {
         }
     }
     if(!tubeToRandom.empty()) {
+        //只从数字为0的空方块中随机生成新的数字
         tubeToRandom.getRandomObject() -> setRandomNum();
     }
     isMoveFinished = true;
