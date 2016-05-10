@@ -14,6 +14,7 @@
 #include "cocos2d.h"
 #include "NumberTube.hpp"
 #include "ScoreDelegate.h"
+#include "ScoreScene.hpp"
 
 class TubeLayer : public cocos2d::Layer, public ScoreDelegate {
 public:
@@ -22,7 +23,10 @@ public:
     CREATE_FUNC(TubeLayer);
     
     virtual void updateScore(int num);
-
+    
+    bool readData();
+    bool writeData();
+    
 private:
     
     NumberTube *tube[4][4];

@@ -16,6 +16,16 @@ bool GameScene::init() {
         return false;
     }
     auto tubeLayer = TubeLayer::create();
-    this -> addChild(tubeLayer);
+    this -> addChild(tubeLayer, 10, "rootLayer");
     return true;
+}
+
+bool GameScene::readData() {
+    auto tubeLayer = (TubeLayer*)this -> getChildByName("rootLayer");
+    return tubeLayer -> readData();
+}
+
+bool GameScene::writeData() {
+    auto tubeLayer = (TubeLayer*)this -> getChildByName("rootLayer");
+    return tubeLayer -> writeData();
 }

@@ -11,13 +11,16 @@
 
 #include <stdio.h>
 #include "cocos2d.h"
+#include "DataDelegate.h"
 
-class GameScene : public cocos2d::Scene {
+class GameScene : public cocos2d::Scene, public DataDelegate {
 public:
     
     virtual bool init();
     CREATE_FUNC(GameScene);
     
+    virtual bool readData();
+    virtual bool writeData();
 };
 
 #endif /* GameScene_hpp */

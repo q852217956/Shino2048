@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include "cocos2d.h"
+#include "GameScene.hpp"
 
 class ScoreScene : public cocos2d::Scene {
 public:
