@@ -56,8 +56,10 @@ bool TubeLayer::init() {
 
 bool TubeLayer::readData() {
     auto userData = UserDefault::getInstance();
+    highestScore = userData -> getIntegerForKey("HighestScore", 0);
     if (userData -> getBoolForKey("GameOver", true)) {
         userData -> setBoolForKey("GameOver", false);
+        this -> score = 0;
         
         //游戏开始时生成两个方块
         randomTubeNum(0);
@@ -72,7 +74,7 @@ bool TubeLayer::readData() {
             }
         }
         this -> score = userData -> getIntegerForKey("Score");
-        highestTubeNum = userData -> getIntegerForKey("HighEstTubeNum");
+        highestTubeNum = userData -> getIntegerForKey("HighestTubeNum");
     }
     return true;
 }
@@ -120,7 +122,8 @@ void TubeLayer::labelInit(Rect labelArea) {
     highestScoreBackground -> setPosition(Vec2(labelSize.width + labelArea.origin.x + TUUBE_MARGIN * 2,
                                                labelArea.getMaxY() - (labelSize.height - TUUBE_MARGIN) * 2 / 3));
     addChild(highestScoreBackground);
-    highestScoreLabel = Label::createWithSystemFont("最高得分\n0", "Arial", 40);
+    auto highestScoreStr = Value(highestScore).asString();
+    highestScoreLabel = Label::createWithSystemFont("最高得分\n" + highestScoreStr, "Arial", 40);
     highestScoreLabel -> setAlignment(TextHAlignment::CENTER, TextVAlignment::CENTER);
     highestScoreLabel -> setPosition(Vec2(highestScoreBackground -> getContentSize().width / 2,
                                           highestScoreBackground -> getContentSize().height / 2));
@@ -259,27 +262,10 @@ void TubeLayer::updateScore(int num) {
 
 void TubeLayer::randomTubeNum(float delayTime) {
     Vector<NumberTube*> tubeToRandom;
-    bool isFinished = true;
-    for(int y = 0; y < 4; y++) {
-        for(int x = 0; x < 4; x++) {
-            if(tube[y][x] -> getNum() == 0) {
+    for (int y = 0; y < 4; y++) {
+        for (int x = 0; x < 4; x++) {
+            if (tube[y][x] -> getNum() == 0) {
                 tubeToRandom.pushBack(tube[y][x]);
-                isFinished = false;
-            } else {
-                if(x != 3) {
-                    if(tube[y][x] -> getNum() == tube[y][x + 1] -> getNum()) {
-                        isFinished = false;
-                    }
-                }
-            }
-        }
-    }
-    for(int x = 0; x < 4; x++) {
-        for(int y = 0; y < 4; y++) {
-            if(y != 3) {
-                if(tube[y][x] -> getNum() == tube[y + 1][x] -> getNum()) {
-                    isFinished = false;
-                }
             }
         }
     }
@@ -287,16 +273,39 @@ void TubeLayer::randomTubeNum(float delayTime) {
         //只从数字为0的空方块中随机生成新的数字
         tubeToRandom.getRandomObject() -> setRandomNum();
         scheduleOnce([&](float dt){
+            bool isFinished = true;
+            for (int y = 0; y < 4; y ++) {
+                for (int x = 0; x < 4; x++) {
+                    if (tube[y][x] -> getNum() == 0) {
+                        isFinished = false;
+                    } else {
+                        if (x != 3) {
+                            if (tube[y][x] -> getNum() == tube[y][x + 1] -> getNum()) {
+                                isFinished = false;
+                            }
+                        }
+                    }
+                }
+            }
+            for (int x = 0; x < 4; x++) {
+                for (int y = 0; y < 4; y++) {
+                    if (y != 3) {
+                        if (tube[y][x] -> getNum() == tube[y + 1][x] -> getNum()) {
+                            isFinished = false;
+                        }
+                    }
+                }
+            }
+            if (isFinished) {
+                auto userData = UserDefault::getInstance();
+                userData -> setBoolForKey("GameOver", true);
+                this -> writeData();
+                auto director = Director::getInstance();
+                auto scoreScene = ScoreScene::create();
+                director -> replaceScene(scoreScene);
+            }
             isMoveFinished = true;
         }, 0.03, "randomDelay");
-    }
-    if (isFinished) {
-        auto userData = UserDefault::getInstance();
-        userData -> setBoolForKey("GameOver", true);
-        this -> writeData();
-        auto director = Director::getInstance();
-        auto scoreScene = ScoreScene::create();
-        director -> replaceScene(TransitionFade::create(1, scoreScene));
     }
 }
 

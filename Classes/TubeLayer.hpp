@@ -51,6 +51,7 @@ private:
     NumberTube *highestTube;
     
     int score;
+    int highestScore;
     int highestTubeNum;
     
     std::vector<int> touchMoveStack;
