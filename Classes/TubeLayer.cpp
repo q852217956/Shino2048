@@ -300,9 +300,6 @@ void TubeLayer::randomTubeNum(float delayTime) {
                 auto userData = UserDefault::getInstance();
                 userData -> setBoolForKey("GameOver", true);
                 this -> writeData();
-                auto director = Director::getInstance();
-                auto scoreScene = ScoreScene::create();
-                director -> replaceScene(scoreScene);
             }
             isMoveFinished = true;
         }, 0.03, "randomDelay");
