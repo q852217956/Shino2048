@@ -16,6 +16,7 @@ bool GameScene::init() {
         return false;
     }
     auto tubeLayer = TubeLayer::create();
+    tubeLayer -> setNewGame(this);
     this -> addChild(tubeLayer, 10, "rootLayer");
     return true;
 }
@@ -28,4 +29,10 @@ bool GameScene::readData() {
 bool GameScene::writeData() {
     auto tubeLayer = (TubeLayer*)this -> getChildByName("rootLayer");
     return tubeLayer -> writeData();
+}
+
+void GameScene::resetGame() {
+    auto director = Director::getInstance();
+    auto newGameScene = GameScene::create();
+    director -> replaceScene(newGameScene);
 }

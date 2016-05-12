@@ -300,10 +300,15 @@ void TubeLayer::randomTubeNum(float delayTime) {
                 auto userData = UserDefault::getInstance();
                 userData -> setBoolForKey("GameOver", true);
                 this -> writeData();
+                this -> newScene -> resetGame();
             }
             isMoveFinished = true;
         }, 0.03, "randomDelay");
     }
+}
+
+void TubeLayer::setNewGame(ResetGameDelegate *newGame) {
+    this -> newScene = newGame;
 }
 
 void TubeLayer::moveLeft() {

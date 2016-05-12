@@ -55,6 +55,7 @@
 		B47900E91CDF2712002A33E9 /* ScoreDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScoreDelegate.h; sourceTree = "<group>"; };
 		B485741F1CDCAE7B006FA5F8 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ios/Info.plist; sourceTree = SOURCE_ROOT; };
 		B485742C1CDCB0DF006FA5F8 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../proj.ios_mac/ios/Default-568h@2x.png"; sourceTree = "<group>"; };
+		B4D523141CE329C200381110 /* ResetGameDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResetGameDelegate.h; sourceTree = "<group>"; };
 		B4DE1E5F1CDC59B50056FFB0 /* GameScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameScene.cpp; sourceTree = "<group>"; };
 		B4DE1E601CDC59B50056FFB0 /* GameScene.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GameScene.hpp; sourceTree = "<group>"; };
 		B4DE1E611CDC59B50056FFB0 /* NumberTube.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NumberTube.cpp; sourceTree = "<group>"; };
@@ -177,6 +178,7 @@
 				46880B8519C43A87006E1F66 /* AppDelegate.h */,
 				B47900E91CDF2712002A33E9 /* ScoreDelegate.h */,
 				B45B54B11CE19DD600E3DFC4 /* DataDelegate.h */,
+				B4D523141CE329C200381110 /* ResetGameDelegate.h */,
 				B4DE1E611CDC59B50056FFB0 /* NumberTube.cpp */,
 				B4DE1E621CDC59B50056FFB0 /* NumberTube.hpp */,
 				B4DE1E5F1CDC59B50056FFB0 /* GameScene.cpp */,

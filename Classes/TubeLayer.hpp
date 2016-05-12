@@ -14,6 +14,7 @@
 #include "cocos2d.h"
 #include "NumberTube.hpp"
 #include "ScoreDelegate.h"
+#include "ResetGameDelegate.h"
 #include "ScoreScene.hpp"
 
 class TubeLayer : public cocos2d::Layer, public ScoreDelegate {
@@ -27,6 +28,8 @@ public:
     bool readData();
     bool writeData();
     
+    void setNewGame(ResetGameDelegate *newGameScene);
+    
 private:
     
     NumberTube *tube[4][4];
@@ -36,6 +39,8 @@ private:
     void tubeInit(cocos2d::Rect tubeArea);
     
     void randomTubeNum(float delayTime);
+    
+    ResetGameDelegate *newScene;
     
     cocos2d::Vec2 touchPoint;
     bool isTouchMoved;

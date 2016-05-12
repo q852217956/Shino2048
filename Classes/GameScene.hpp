@@ -12,8 +12,9 @@
 #include <stdio.h>
 #include "cocos2d.h"
 #include "DataDelegate.h"
+#include "ResetGameDelegate.h"
 
-class GameScene : public cocos2d::Scene, public DataDelegate {
+class GameScene : public cocos2d::Scene, public DataDelegate, public ResetGameDelegate {
 public:
     
     virtual bool init();
@@ -21,6 +22,8 @@ public:
     
     virtual bool readData();
     virtual bool writeData();
+    
+    virtual void resetGame();
 };
 
 #endif /* GameScene_hpp */
