@@ -36,6 +36,8 @@ public:
     */
     virtual void applicationWillEnterForeground();
     
+    void setDataDelegator(DataDelegate *delegator);
+    
 private:
     
     DataDelegate *dataDelegator;

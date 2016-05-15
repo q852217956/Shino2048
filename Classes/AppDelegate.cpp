@@ -44,7 +44,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     // create a scene. it's an autorelease object
     auto scene = GameScene::create();
-    this -> dataDelegator = scene;
+    this -> setDataDelegator(scene);
     
     // run
     director->runWithScene(scene);
@@ -55,7 +55,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 // This function will be called when the app is inactive. When comes a phone call,it's be invoked too
 void AppDelegate::applicationDidEnterBackground() {
     Director::getInstance()->stopAnimation();
-    this -> dataDelegator -> writeData();
+    this -> dataDelegator -> writeData(false);
     
     // if you use SimpleAudioEngine, it must be pause
     // SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
@@ -67,4 +67,8 @@ void AppDelegate::applicationWillEnterForeground() {
 
     // if you use SimpleAudioEngine, it must resume here
     // SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
+}
+
+void AppDelegate::setDataDelegator(DataDelegate *delegator) {
+    this -> dataDelegator = delegator;
 }

@@ -14,7 +14,7 @@ public:
     
     virtual ~DataDelegate() {};
     virtual bool readData() = 0;
-    virtual bool writeData() = 0;
+    virtual bool writeData(bool isGameOver) = 0;
 };
 
 #endif /* DataDelegate_h */

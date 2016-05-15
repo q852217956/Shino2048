@@ -13,6 +13,7 @@
 #include "cocos2d.h"
 #include "DataDelegate.h"
 #include "ResetGameDelegate.h"
+#include "AppDelegate.h"
 
 class GameScene : public cocos2d::Scene, public DataDelegate, public ResetGameDelegate {
 public:
@@ -21,7 +22,7 @@ public:
     CREATE_FUNC(GameScene);
     
     virtual bool readData();
-    virtual bool writeData();
+    virtual bool writeData(bool isGameOver);
     
     virtual void resetGame();
 };

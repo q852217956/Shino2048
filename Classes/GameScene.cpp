@@ -17,7 +17,8 @@ bool GameScene::init() {
     }
     auto tubeLayer = TubeLayer::create();
     tubeLayer -> setNewGame(this);
-    this -> addChild(tubeLayer, 10, "rootLayer");
+    tubeLayer -> setName("rootLayer");
+    this -> addChild(tubeLayer);
     return true;
 }
 
@@ -26,13 +27,15 @@ bool GameScene::readData() {
     return tubeLayer -> readData();
 }
 
-bool GameScene::writeData() {
+bool GameScene::writeData(bool isGameOver) {
     auto tubeLayer = (TubeLayer*)this -> getChildByName("rootLayer");
-    return tubeLayer -> writeData();
+    return tubeLayer -> writeData(isGameOver);
 }
 
 void GameScene::resetGame() {
     auto director = Director::getInstance();
     auto newGameScene = GameScene::create();
+    auto appDelegate = (AppDelegate*)Application::getInstance();
+    appDelegate -> setDataDelegator(newGameScene);
     director -> replaceScene(newGameScene);
 }

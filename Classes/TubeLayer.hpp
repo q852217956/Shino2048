@@ -26,7 +26,7 @@ public:
     virtual void updateScore(int num);
     
     bool readData();
-    bool writeData();
+    bool writeData(bool isGameOver);
     
     void setNewGame(ResetGameDelegate *newGameScene);
     
@@ -42,7 +42,6 @@ private:
     
     ResetGameDelegate *newScene;
     
-    cocos2d::Vec2 touchPoint;
     bool isTouchMoved;
     bool isMoveFinished;
     void moveLeft();
@@ -56,8 +55,6 @@ private:
     NumberTube *highestTube;
     
     int score;
-    int highestScore;
-    int highestTubeNum;
     
     std::vector<int> touchMoveStack;
 };
