@@ -11,13 +11,20 @@
 
 #include <stdio.h>
 #include "cocos2d.h"
+#include "DataDelegate.h"
+#include "ResetGameDelegate.h"
+#include "AppDelegate.h"
 
-class GameScene : public cocos2d::Scene {
+class GameScene : public cocos2d::Scene, public DataDelegate, public ResetGameDelegate {
 public:
     
     virtual bool init();
     CREATE_FUNC(GameScene);
     
+    virtual bool readData();
+    virtual bool writeData(bool isGameOver);
+    
+    virtual void resetGame();
 };
 
 #endif /* GameScene_hpp */

@@ -14,6 +14,8 @@
 #include "cocos2d.h"
 #include "NumberTube.hpp"
 #include "ScoreDelegate.h"
+#include "ResetGameDelegate.h"
+#include "ScoreScene.hpp"
 
 class TubeLayer : public cocos2d::Layer, public ScoreDelegate {
 public:
@@ -22,7 +24,12 @@ public:
     CREATE_FUNC(TubeLayer);
     
     virtual void updateScore(int num);
-
+    
+    bool readData();
+    bool writeData(bool isGameOver);
+    
+    void setNewGame(ResetGameDelegate *newGameScene);
+    
 private:
     
     NumberTube *tube[4][4];
@@ -33,7 +40,8 @@ private:
     
     void randomTubeNum(float delayTime);
     
-    cocos2d::Vec2 touchPoint;
+    ResetGameDelegate *newScene;
+    
     bool isTouchMoved;
     bool isMoveFinished;
     void moveLeft();
@@ -47,7 +55,6 @@ private:
     NumberTube *highestTube;
     
     int score;
-    int highestTubeNum;
     
     std::vector<int> touchMoveStack;
 };

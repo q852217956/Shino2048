@@ -25,8 +25,10 @@ bool TubeLayer::init() {
     Size designSize = Director::getInstance() -> getOpenGLView() -> getDesignResolutionSize();
     Rect gameArea = Rect(TUUBE_MARGIN * 2, GAME_AREA_HEIGHT,
                          designSize.width - TUUBE_MARGIN * 4, designSize.width - TUUBE_MARGIN * 4);
-    Rect nonGameArea = Rect(TUUBE_MARGIN * 2, designSize.width + TUUBE_MARGIN + GAME_AREA_HEIGHT,
-                            designSize.width - TUUBE_MARGIN * 4, designSize.height - designSize.width - TUUBE_MARGIN * 4 - GAME_AREA_HEIGHT);
+    Rect nonGameArea = Rect(TUUBE_MARGIN * 2,
+                            designSize.width + TUUBE_MARGIN + GAME_AREA_HEIGHT,
+                            designSize.width - TUUBE_MARGIN * 4,
+                            designSize.height - designSize.width - TUUBE_MARGIN * 4 - GAME_AREA_HEIGHT);
     
     //添加背景颜色
     auto background = LayerColor::create(Color4B(0, 255, 224, 255));
@@ -38,24 +40,59 @@ bool TubeLayer::init() {
     layerBackground -> setPosition(gameArea.origin);
     addChild(layerBackground);
     
-    //添加分数标签、当前最大方块
-    labelInit(nonGameArea);
-    
     //生成4*4方块及方块背景
-    tubeInit(gameArea);
+    this -> tubeInit(gameArea);
+    
+    //添加分数标签、当前最大方块
+    this -> labelInit(nonGameArea);
+
+    //读取游戏记录文件
+    this -> readData();
     
     /*绑定触摸事件*/
-    touchInit(gameArea);
+    this -> touchInit(gameArea);
     return true;
+}
+
+void TubeLayer::tubeInit(Rect tubeArea) {
+    Size tubeSize = Size((tubeArea.size.width - 100) / 4, (tubeArea.size.height - 100) / 4);
+    //在方块下添加背景
+    for (int y = 0; y < 4; y++) {
+        for (int x = 0; x < 4; x++) {
+            Vec2 tubePosition = Vec2(tubeSize / 2);
+            tubePosition.scale(Vec2(x * 2 + 1, y * 2 + 1));
+            tubePosition = tubePosition + tubeArea.origin + Vec2(20 * (x + 1), 20 * (y + 1));
+            auto tubeBackground = LayerColor::create(Color4B(174, 251, 251, 255));
+            tubeBackground -> setContentSize(tubeSize);
+            tubeBackground -> ignoreAnchorPointForPosition(false);
+            tubeBackground -> setAnchorPoint(Vec2(0.5, 0.5));
+            tubeBackground -> setPosition(tubePosition);
+            addChild(tubeBackground);
+        }
+    }
+    for (int y = 0; y < 4; y++) {
+        for (int x = 0; x < 4; x++) {
+            /* 等边距布局，以横向为例：
+             第n个方块位置 = 方块边距 * n + 方块尺寸 / 2 * (2 * n - 1) + 游戏区域偏移 */
+            Vec2 tubePosition = Vec2(tubeSize / 2);
+            tubePosition.scale(Vec2(x * 2 + 1, y * 2 + 1));
+            tubePosition = tubePosition + tubeArea.origin + Vec2(20 * (x + 1), 20 * (y + 1));
+            tube[y][x] = NumberTube::create(tubeSize, tubePosition);
+            tube[y][x] -> setUpdateDelegator(this);
+            addChild(tube[y][x]);
+        }
+    }
+    isMoveFinished = true;
 }
 
 void TubeLayer::labelInit(Rect labelArea) {
     //当前最大方块
-    auto labelSize = Size((labelArea.size.width - TUUBE_MARGIN * 4) / 3, (labelArea.size.width - TUUBE_MARGIN * 4) / 3);
+    auto labelSize = Size((labelArea.size.width - TUUBE_MARGIN * 4) / 3,
+                          (labelArea.size.width - TUUBE_MARGIN * 4) / 3);
     highestTube = NumberTube::create(labelSize,
-                                     Vec2(labelSize.width / 2 + labelArea.origin.x, labelArea.getMaxY() - labelSize.height / 2));
-    highestTubeNum = 2;
-    highestTube -> setNum(highestTubeNum);
+                                     Vec2(labelSize.width / 2 + labelArea.origin.x,
+                                          labelArea.getMaxY() - labelSize.height / 2));
+    highestTube -> setNum(0);
     addChild(highestTube);
     
     //最高分
@@ -64,7 +101,8 @@ void TubeLayer::labelInit(Rect labelArea) {
     highestScoreBackground -> setPosition(Vec2(labelSize.width + labelArea.origin.x + TUUBE_MARGIN * 2,
                                                labelArea.getMaxY() - (labelSize.height - TUUBE_MARGIN) * 2 / 3));
     addChild(highestScoreBackground);
-    highestScoreLabel = Label::createWithSystemFont("最高得分\n0", "Arial", 40);
+    auto highestScoreStr = Value(0).asString();
+    highestScoreLabel = Label::createWithSystemFont("最高得分\n" + highestScoreStr, "Arial", 40);
     highestScoreLabel -> setAlignment(TextHAlignment::CENTER, TextVAlignment::CENTER);
     highestScoreLabel -> setPosition(Vec2(highestScoreBackground -> getContentSize().width / 2,
                                           highestScoreBackground -> getContentSize().height / 2));
@@ -76,8 +114,7 @@ void TubeLayer::labelInit(Rect labelArea) {
     scoreBackground -> setPosition(Vec2(labelSize.width * 2 + TUUBE_MARGIN * 2 * 2 + labelArea.origin.x,
                                         labelArea.getMaxY() - (labelSize.height - TUUBE_MARGIN) * 2 / 3));
     addChild(scoreBackground);
-    score = 0;
-    auto scoreStr = Value(score).asString();
+    auto scoreStr = Value(0).asString();
     scoreLabel = Label::createWithSystemFont("当前得分\n" + scoreStr, "Arial", 40);
     scoreLabel -> setAlignment(TextHAlignment::CENTER, TextVAlignment::CENTER);
     scoreLabel -> setPosition(highestScoreLabel -> getPosition());
@@ -90,48 +127,67 @@ void TubeLayer::labelInit(Rect labelArea) {
     addChild(message);
 }
 
-void TubeLayer::tubeInit(Rect tubeArea) {
-    Size tubeSize = Size((tubeArea.size.width - 100) / 4, (tubeArea.size.height - 100) / 4);
-    for (int y = 0; y < 4; y++) {
-        for (int x = 0; x < 4; x++) {
-            Vec2 tubePosition = Vec2(tubeSize / 2);
-            tubePosition.scale(Vec2(x * 2 + 1, y * 2 + 1));
-            tubePosition = tubePosition + tubeArea.origin + Vec2(20 * (x + 1), 20 * (y + 1));
-            auto tubeBackground = LayerColor::create(Color4B(174, 251, 251, 255));
-            tubeBackground -> setContentSize(tubeSize);
-            tubeBackground -> ignoreAnchorPointForPosition(false);
-            tubeBackground -> setAnchorPoint(Vec2(0.5, 0.5));
-            tubeBackground -> setPosition(tubePosition);
-            log("background position: %f, %f", tubePosition.x, tubePosition.y);
-            addChild(tubeBackground);
+
+bool TubeLayer::readData() {
+    auto userData = UserDefault::getInstance();
+    int highestScore = userData -> getIntegerForKey("HighestScore", 0);
+    this -> highestScoreLabel -> setString("最高得分\n" + Value(highestScore).asString());
+    if (userData -> getBoolForKey("GameOver", true)) {
+        userData -> setBoolForKey("GameOver", false);
+        
+        //游戏开始时生成两个方块
+        randomTubeNum(0);
+        randomTubeNum(0);
+    } else {
+        for (int y = 0; y < 4; y++) {
+            for (int x = 0; x < 4; x++) {
+                int n = y * 4 + x + 1;
+                auto tubeNumKey = "Tube" + Value(n).asString();
+                int tubeNum = userData -> getIntegerForKey(tubeNumKey.c_str());
+                tube[y][x] -> setNum(tubeNum);
+            }
+        }
+        int score = userData -> getIntegerForKey("Score");
+        this -> scoreLabel -> setString("当前得分\n" + Value(score).asString());
+        int highestTubeNum = userData -> getIntegerForKey("HighestTubeNum");
+        this -> highestTube -> setNum(highestTubeNum);
+    }
+    return true;
+}
+
+bool TubeLayer::writeData(bool isGameOver) {
+    auto userData = UserDefault::getInstance();
+    if (isGameOver) {
+        userData -> setBoolForKey("GameOver", true);
+        userData -> setIntegerForKey("Score", 0);
+        for (int n = 1; n < 17; n++) {
+            auto tubeNumKey = "Tube" + Value(n).asString();
+            userData -> setIntegerForKey(tubeNumKey.c_str(), 0);
+        }
+        int highestScore = userData -> getIntegerForKey("HighestScore", 0);
+        if (this -> score > highestScore) {
+            userData -> setIntegerForKey("HighestScore", this -> score);
+        }
+    } else {
+        userData -> setIntegerForKey("Score", this -> score);
+        userData -> setIntegerForKey("HighestTubeNum", highestTube -> getNum());
+        for (int y = 0; y < 4; y++) {
+            for (int x = 0; x < 4; x++) {
+                int n = y * 4 + x + 1;
+                auto tubeNumKey = "Tube" + Value(n).asString();
+                userData -> setIntegerForKey(tubeNumKey.c_str(), this -> tube[y][x] -> getNum());
+            }
         }
     }
-    for (int y = 0; y < 4; y++) {
-        for (int x = 0; x < 4; x++) {
-            /* 等边距布局，以横向为例：
-                    第n个方块位置 = 方块边距 * n + 方块尺寸 / 2 * (2 * n - 1) + 游戏区域偏移 */
-            Vec2 tubePosition = Vec2(tubeSize / 2);
-            tubePosition.scale(Vec2(x * 2 + 1, y * 2 + 1));
-            tubePosition = tubePosition + tubeArea.origin + Vec2(20 * (x + 1), 20 * (y + 1));
-            tube[y][x] = NumberTube::create(tubeSize, tubePosition);
-            tube[y][x] -> setUpdateDelegator(this);
-            log("tube position: %f, %f", tubePosition.x, tubePosition.y);
-            addChild(tube[y][x]);
-        }
-    }
-    
-    //游戏开始时生成两个方块
-    randomTubeNum(0);
-    randomTubeNum(0);
+    userData -> flush();
+    return true;
 }
 
 void TubeLayer::touchInit(Rect touchArea) {
     auto touchListener = EventListenerTouchOneByOne::create();
-    touchListener -> setSwallowTouches(true);
     touchListener -> onTouchBegan = [&, touchArea](Touch *touch, Event *event){
-        touchPoint = touch -> getLocation();
         //判断是否在游戏区域内触摸
-        if (touchArea.containsPoint(touchPoint)) {
+        if (touchArea.containsPoint(touch -> getLocation())) {
             isTouchMoved = false;
             return true;
         } else {
@@ -139,8 +195,7 @@ void TubeLayer::touchInit(Rect touchArea) {
         }
     };
     touchListener -> onTouchMoved = [&](Touch *touch, Event *event){
-        auto currentPoint = touch -> getLocation();
-        auto moveDistance = Vec2(touchPoint, currentPoint);
+        auto moveDistance = Vec2(touch -> getStartLocation(), touch -> getLocation());
         //滑动距离大于100像素即触发滑动判定
         if (moveDistance.length() > 100 && isTouchMoved == false) {
             int moveDirection;
@@ -199,9 +254,8 @@ void TubeLayer::updateScore(int num) {
     score += num;
     auto tmpStr = "当前得分\n" + Value(score).asString();
     scoreLabel -> setString(tmpStr);
-    if (num > highestTubeNum) {
-        highestTubeNum = num;
-        highestTube -> setNum(highestTubeNum);
+    if (num > this -> highestTube -> getNum()) {
+        this -> highestTube -> setNum(num);
         auto nextTubeNum = Value(num * 2).asString();
         message -> setString("您的现在的目标是 " + nextTubeNum);
     }
@@ -209,27 +263,10 @@ void TubeLayer::updateScore(int num) {
 
 void TubeLayer::randomTubeNum(float delayTime) {
     Vector<NumberTube*> tubeToRandom;
-    bool isFinished = true;
-    for(int y = 0; y < 4; y++) {
-        for(int x = 0; x < 4; x++) {
-            if(tube[y][x] -> getNum() == 0) {
+    for (int y = 0; y < 4; y++) {
+        for (int x = 0; x < 4; x++) {
+            if (tube[y][x] -> getNum() == 0) {
                 tubeToRandom.pushBack(tube[y][x]);
-                isFinished = false;
-            } else {
-                if(x != 3) {
-                    if(tube[y][x] -> getNum() == tube[y][x + 1] -> getNum()) {
-                        isFinished = false;
-                    }
-                }
-            }
-        }
-    }
-    for(int x = 0; x < 4; x++) {
-        for(int y = 0; y < 4; y++) {
-            if(y != 3) {
-                if(tube[y][x] -> getNum() == tube[y + 1][x] -> getNum()) {
-                    isFinished = false;
-                }
             }
         }
     }
@@ -237,9 +274,40 @@ void TubeLayer::randomTubeNum(float delayTime) {
         //只从数字为0的空方块中随机生成新的数字
         tubeToRandom.getRandomObject() -> setRandomNum();
         scheduleOnce([&](float dt){
+            bool isFinished = true;
+            for (int y = 0; y < 4; y ++) {
+                for (int x = 0; x < 4; x++) {
+                    if (tube[y][x] -> getNum() == 0) {
+                        isFinished = false;
+                    } else {
+                        if (x != 3) {
+                            if (tube[y][x] -> getNum() == tube[y][x + 1] -> getNum()) {
+                                isFinished = false;
+                            }
+                        }
+                    }
+                }
+            }
+            for (int x = 0; x < 4; x++) {
+                for (int y = 0; y < 4; y++) {
+                    if (y != 3) {
+                        if (tube[y][x] -> getNum() == tube[y + 1][x] -> getNum()) {
+                            isFinished = false;
+                        }
+                    }
+                }
+            }
+            if (isFinished) {
+                this -> writeData(true);
+                this -> newScene -> resetGame();
+            }
             isMoveFinished = true;
         }, 0.03, "randomDelay");
     }
+}
+
+void TubeLayer::setNewGame(ResetGameDelegate *newGame) {
+    this -> newScene = newGame;
 }
 
 void TubeLayer::moveLeft() {

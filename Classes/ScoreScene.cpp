@@ -23,6 +23,8 @@ bool ScoreLayer::init() {
     if (!Layer::init()) {
         return false;
     }
-    
+    auto director = Director::getInstance();
+    auto gameScene = GameScene::create();
+    director -> replaceScene(gameScene);
     return true;
 }

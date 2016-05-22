@@ -16,6 +16,26 @@ bool GameScene::init() {
         return false;
     }
     auto tubeLayer = TubeLayer::create();
+    tubeLayer -> setNewGame(this);
+    tubeLayer -> setName("rootLayer");
     this -> addChild(tubeLayer);
     return true;
+}
+
+bool GameScene::readData() {
+    auto tubeLayer = (TubeLayer*)this -> getChildByName("rootLayer");
+    return tubeLayer -> readData();
+}
+
+bool GameScene::writeData(bool isGameOver) {
+    auto tubeLayer = (TubeLayer*)this -> getChildByName("rootLayer");
+    return tubeLayer -> writeData(isGameOver);
+}
+
+void GameScene::resetGame() {
+    auto director = Director::getInstance();
+    auto newGameScene = GameScene::create();
+    auto appDelegate = (AppDelegate*)Application::getInstance();
+    appDelegate -> setDataDelegator(newGameScene);
+    director -> replaceScene(newGameScene);
 }
