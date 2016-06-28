@@ -16,6 +16,8 @@ public:
     virtual ~ScoreDelegate() {}
     
     virtual void updateScore(int num) = 0;
+    
+    virtual void updateActionNum() = 0;
 };
 
 #endif /* ScoreDelegate_h */

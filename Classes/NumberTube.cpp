@@ -150,7 +150,10 @@ void NumberTube::runActionMoveTo(NumberTube *tube) {
         tube -> setNum(tmpNum);
     });
     auto place = Place::create(getPosition());
-    auto seq = Sequence::create(move, delay, callFunc, place, NULL);
+    auto callFunc2 = CallFunc::create([=]{
+        this -> updateDelegator -> updateActionNum();
+    });
+    auto seq = Sequence::create(move, delay, callFunc, place, callFunc2, NULL);
     this -> runAction(seq);
 }
 
@@ -161,7 +164,10 @@ void NumberTube::runActionAddTo(NumberTube *tube) {
         setNum(0);
     });
     auto place = Place::create(getPosition());
-    auto seq = Sequence::create(move, delay, callFunc, place, NULL);
+    auto callFunc2 = CallFunc::create([=]{
+        this -> updateDelegator -> updateActionNum();
+    });
+    auto seq = Sequence::create(move, delay, callFunc, place, callFunc2, NULL);
     this -> runAction(seq);
 }
 
@@ -176,6 +182,9 @@ void NumberTube::runActionAddBy(NumberTube *tube) {
         tube -> setNum(tmpNum);
     });
     auto place = Place::create(getPosition());
-    auto seq = Sequence::create(move, scale1, scale2, callFunc, place, NULL);
+    auto callFunc2 = CallFunc::create([=]{
+        this -> updateDelegator -> updateActionNum();
+    });
+    auto seq = Sequence::create(move, scale1, scale2, callFunc, place, callFunc2, NULL);
     this -> runAction(seq);
 }
