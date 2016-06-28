@@ -11,11 +11,10 @@
 
 #include <stdio.h>
 #include "cocos2d.h"
-#include "ScoreDelegate.h"
+#include "TubeDelegate.h"
 
 class NumberTube : public cocos2d::Sprite {
 public:
-    
     bool init(cocos2d::Size tubeSize, cocos2d::Vec2 tubePosition);
     static NumberTube* create(cocos2d::Size tubeSize, cocos2d::Vec2 tubePosition);
     
@@ -28,17 +27,14 @@ public:
     void runActionAddBy(NumberTube *tube);
     void runActionAddTo(NumberTube *tube);
     
-    void setUpdateDelegator(ScoreDelegate *delegator);
+    void setUpdateDelegator(TubeDelegate *delegator);
     
 private:
-    
     int num;
     cocos2d::LayerColor *background;
     cocos2d::Label *numLabel;
     
-    ScoreDelegate *updateDelegator;
-    
-    void nullFunc();
+    TubeDelegate *updateDelegator;
 };
 
 #endif /* NumberTube_hpp */

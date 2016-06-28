@@ -13,7 +13,7 @@
 #include "array"
 #include "cocos2d.h"
 #include "NumberTube.hpp"
-#include "ScoreDelegate.h"
+#include "TubeDelegate.h"
 #include "ResetGameDelegate.h"
 #include "ScoreScene.hpp"
 
@@ -24,14 +24,15 @@ enum class Direction {
     RIGHT
 };
 
-class TubeLayer : public cocos2d::Layer, public ScoreDelegate {
+class TubeLayer : public cocos2d::Layer, public TubeDelegate {
 public:
-    
     virtual bool init() override;
     CREATE_FUNC(TubeLayer);
     
+    //TubeDelegate
     virtual void updateScore(int num) override;
     virtual void updateActionNum() override;
+    virtual void updateIsFinished() override;
     
     bool readData();
     bool writeData(bool isGameOver);
@@ -39,37 +40,28 @@ public:
     void setNewGame(ResetGameDelegate *newGameScene);
     
 private:
-    
     NumberTube *tube[4][4];
     std::array<std::array<NumberTube*, 4>, 4> arrangeArray(Direction direction);
     void move(Direction direction);
     
+    std::vector<Direction> touchMoveQueue;
     void touchInit(cocos2d::Rect touchArea);
-    
     void labelInit(cocos2d::Rect labelArea);
     void tubeInit(cocos2d::Rect tubeArea);
     
-    void randomTubeNum(float delayTime);
+    void randomTubeNum();
     void update(float dt) override;
     
+    bool isTouchMoved;
     int actionNum;
     
     ResetGameDelegate *newScene;
-    
-    bool isTouchMoved;
-    void moveLeft();
-    void moveRight();
-    void moveUp();
-    void moveDown();
     
     cocos2d::Label *scoreLabel;
     cocos2d::Label *highestScoreLabel;
     cocos2d::Label *message;
     NumberTube *highestTube;
-    
     int score;
-    
-    std::vector<Direction> touchMoveStack;
 };
 
 #endif /* TubeLayer_hpp */

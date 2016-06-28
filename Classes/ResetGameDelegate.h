@@ -10,9 +10,7 @@
 #define ResetGameDelegate_h
 
 class ResetGameDelegate {
-    
 public:
-    
     virtual ~ResetGameDelegate() {};
     virtual void resetGame() = 0;
 };

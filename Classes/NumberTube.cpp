@@ -46,7 +46,7 @@ bool NumberTube::init(Size tubeSize, Vec2 tubePosition) {
     return true;
 }
 
-void NumberTube::setUpdateDelegator(ScoreDelegate *delegator){
+void NumberTube::setUpdateDelegator(TubeDelegate *delegator){
     updateDelegator = delegator;
 }
 
@@ -136,7 +136,10 @@ bool NumberTube::setRandomNum() {
         this -> setNum(tmpNum);
     });
     auto scale = ScaleTo::create(0.03, 1);
-    auto seq = Sequence::create(callFunc, scale, NULL);
+    auto callFunc2 = CallFunc::create([=]{
+        this -> updateDelegator -> updateIsFinished();
+    });
+    auto seq = Sequence::create(callFunc, scale, callFunc2, NULL);
     this -> runAction(seq);
     return true;
 }

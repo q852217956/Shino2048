@@ -23,8 +23,10 @@ bool TubeLayer::init() {
     
     //自身布局，定义布局尺寸
     Size designSize = Director::getInstance() -> getOpenGLView() -> getDesignResolutionSize();
-    Rect gameArea = Rect(TUUBE_MARGIN * 2, GAME_AREA_HEIGHT,
-                         designSize.width - TUUBE_MARGIN * 4, designSize.width - TUUBE_MARGIN * 4);
+    Rect gameArea = Rect(TUUBE_MARGIN * 2,
+                         GAME_AREA_HEIGHT,
+                         designSize.width - TUUBE_MARGIN * 4,
+                         designSize.width - TUUBE_MARGIN * 4);
     Rect nonGameArea = Rect(TUUBE_MARGIN * 2,
                             designSize.width + TUUBE_MARGIN + GAME_AREA_HEIGHT,
                             designSize.width - TUUBE_MARGIN * 4,
@@ -136,8 +138,8 @@ bool TubeLayer::readData() {
         userData -> setBoolForKey("GameOver", false);
         
         //游戏开始时生成两个方块
-        randomTubeNum(0);
-        randomTubeNum(0);
+        randomTubeNum();
+        randomTubeNum();
     } else {
         for (int y = 0; y < 4; y++) {
             for (int x = 0; x < 4; x++) {
@@ -160,7 +162,7 @@ bool TubeLayer::writeData(bool isGameOver) {
     if (isGameOver) {
         userData -> setBoolForKey("GameOver", true);
         userData -> setIntegerForKey("Score", 0);
-        for (int n = 1; n < 17; n++) {
+        for (int n = 1; n <= 16; n++) {
             auto tubeNumKey = "Tube" + Value(n).asString();
             userData -> setIntegerForKey(tubeNumKey.c_str(), 0);
         }
@@ -201,15 +203,15 @@ void TubeLayer::touchInit(Rect touchArea) {
             if (std::abs(moveDistance.x) > std::abs(moveDistance.y)) {
                 if (moveDistance.x > 0) {
                     //每次滑动操作进入到滑动队列，防止同时处理多次操作
-                    touchMoveStack.push_back(Direction::RIGHT);
+                    touchMoveQueue.push_back(Direction::RIGHT);
                 } else {
-                    touchMoveStack.push_back(Direction::LEFT);
+                    touchMoveQueue.push_back(Direction::LEFT);
                 }
             } else {
                 if (moveDistance.y > 0) {
-                    touchMoveStack.push_back(Direction::UP);
+                    touchMoveQueue.push_back(Direction::UP);
                 } else {
-                    touchMoveStack.push_back(Direction::DOWN);
+                    touchMoveQueue.push_back(Direction::DOWN);
                 }
             }
             isTouchMoved = true;
@@ -236,23 +238,54 @@ void TubeLayer::updateActionNum() {
     if (this -> actionNum != 0) {
         this -> actionNum--;
         if (this -> actionNum == 0) {
-            this -> randomTubeNum(0);
+            this -> randomTubeNum();
         }
     }
+}
+
+void TubeLayer::updateIsFinished() {
+    bool isFinished = true;
+    for (int y = 0; y < 4; y ++) {
+        for (int x = 0; x < 4; x++) {
+            if (tube[y][x] -> getNum() == 0) {
+                isFinished = false;
+            } else {
+                if (x != 3) {
+                    if (tube[y][x] -> getNum() == tube[y][x + 1] -> getNum()) {
+                        isFinished = false;
+                    }
+                }
+            }
+        }
+    }
+    for (int x = 0; x < 4; x++) {
+        for (int y = 0; y < 4; y++) {
+            if (y != 3) {
+                if (tube[y][x] -> getNum() == tube[y + 1][x] -> getNum()) {
+                    isFinished = false;
+                }
+            }
+        }
+    }
+    if (isFinished) {
+        this -> writeData(true);
+        this -> newScene -> resetGame();
+    }
+
 }
 
 void TubeLayer::update(float dt) {
     if (this -> actionNum != 0) {
         return;
     }
-    if (!touchMoveStack.empty()) {
-        auto moveDirection = touchMoveStack.front();
-        touchMoveStack.pop_back();
+    if (!touchMoveQueue.empty()) {
+        auto moveDirection = touchMoveQueue.front();
+        touchMoveQueue.pop_back();
         move(moveDirection);
     }
 }
 
-void TubeLayer::randomTubeNum(float delayTime) {
+void TubeLayer::randomTubeNum() {
     Vector<NumberTube*> tubeToRandom;
     for (int y = 0; y < 4; y++) {
         for (int x = 0; x < 4; x++) {
@@ -264,35 +297,6 @@ void TubeLayer::randomTubeNum(float delayTime) {
     if(!tubeToRandom.empty()) {
         //只从数字为0的空方块中随机生成新的数字
         tubeToRandom.getRandomObject() -> setRandomNum();
-        scheduleOnce([&](float dt){
-            bool isFinished = true;
-            for (int y = 0; y < 4; y ++) {
-                for (int x = 0; x < 4; x++) {
-                    if (tube[y][x] -> getNum() == 0) {
-                        isFinished = false;
-                    } else {
-                        if (x != 3) {
-                            if (tube[y][x] -> getNum() == tube[y][x + 1] -> getNum()) {
-                                isFinished = false;
-                            }
-                        }
-                    }
-                }
-            }
-            for (int x = 0; x < 4; x++) {
-                for (int y = 0; y < 4; y++) {
-                    if (y != 3) {
-                        if (tube[y][x] -> getNum() == tube[y + 1][x] -> getNum()) {
-                            isFinished = false;
-                        }
-                    }
-                }
-            }
-            if (isFinished) {
-                this -> writeData(true);
-                this -> newScene -> resetGame();
-            }
-        }, 0.03, "randomDelay");
     }
 }
 
@@ -336,11 +340,10 @@ std::array<std::array<NumberTube*, 4>, 4> TubeLayer::arrangeArray(Direction dire
 }
 
 void TubeLayer::move(Direction direction) {
-    auto tubeArray = this -> arrangeArray(direction);
     bool isMove = false;
     int num = 0;
-    Vector<NumberTube*> tubeToMoveStack;
-    Vector<NumberTube*> tubeWillArriveStack;
+    Vector<NumberTube*> tubeToMoveStack, tubeWillArriveStack;
+    auto tubeArray = this -> arrangeArray(direction);
     for (int y = 0; y < 4; y++) {
         tubeWillArriveStack.clear();
         for (int x = 0; x < 4; x++) {

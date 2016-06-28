@@ -17,7 +17,6 @@
 
 class GameScene : public cocos2d::Scene, public DataDelegate, public ResetGameDelegate {
 public:
-    
     virtual bool init();
     CREATE_FUNC(GameScene);
     
