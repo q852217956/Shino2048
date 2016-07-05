@@ -69,6 +69,6 @@ void AppDelegate::applicationWillEnterForeground() {
     // SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
 }
 
-void AppDelegate::setDataDelegator(DataDelegate *delegator) {
+void AppDelegate::setDataDelegator(DataStorageDelegate *delegator) {
     this -> dataDelegator = delegator;
 }

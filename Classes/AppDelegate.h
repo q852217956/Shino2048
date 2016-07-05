@@ -2,7 +2,7 @@
 #define  _APP_DELEGATE_H_
 
 #include "cocos2d.h"
-#include "DataDelegate.h"
+#include "DataStorageDelegate.h"
 
 /**
 @brief    The cocos2d Application.
@@ -36,11 +36,11 @@ public:
     */
     virtual void applicationWillEnterForeground();
     
-    void setDataDelegator(DataDelegate *delegator);
+    void setDataDelegator(DataStorageDelegate *delegator);
     
 private:
     
-    DataDelegate *dataDelegator;
+    DataStorageDelegate *dataDelegator;
 };
 
 #endif // _APP_DELEGATE_H_

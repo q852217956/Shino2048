@@ -219,7 +219,7 @@ void TubeLayer::touchInit(Rect touchArea) {
     };
     auto eventDispatcher = Director::getInstance() -> getEventDispatcher();
     eventDispatcher -> addEventListenerWithSceneGraphPriority(touchListener, this);
-    
+    //启动定时器，每帧进行一次调用
     this -> scheduleUpdate();
 }
 
@@ -305,43 +305,43 @@ void TubeLayer::setNewGame(ResetGameDelegate *newGame) {
 }
 
 std::array<std::array<NumberTube*, 4>, 4> TubeLayer::arrangeArray(Direction direction) {
-    std::array<std::array<NumberTube*, 4>, 4> tmp;
+    std::array<std::array<NumberTube*, 4>, 4> arrangedTubeArray;
     switch (direction) {
         case Direction::LEFT :
             for (int y = 0, y2 = 0; y < 4; y++, y2++) {
                 for (int x = 3, x2 = 0; x >= 0; x--, x2++) {
-                    tmp[y][x2] = tube[y][x];
+                    arrangedTubeArray[y][x2] = tube[y][x];
                 }
             }
             break;
         case Direction::RIGHT :
             for (int y = 0, y2 = 0; y < 4; y++, y2++) {
                 for (int x = 0, x2 = 0; x < 4; x++, x2++) {
-                    tmp[y][x] = tube[y][x];
+                    arrangedTubeArray[y][x] = tube[y][x];
                 }
             }
             break;
         case Direction::UP :
             for (int x = 0, y2 = 0; x < 4; x++, y2++) {
                 for (int y = 0, x2 = 0; y < 4; y++, x2++) {
-                    tmp[y2][x2] = tube[y][x];
+                    arrangedTubeArray[y2][x2] = tube[y][x];
                 }
             }
             break;
         case Direction::DOWN :
             for (int x = 0, y2 = 0; x < 4; x++, y2++) {
                 for (int y = 3, x2 = 0; y >= 0; y--, x2++) {
-                    tmp[y2][x2] = tube[y][x];
+                    arrangedTubeArray[y2][x2] = tube[y][x];
                 }
             }
             break;
     }
-    return tmp;
+    return arrangedTubeArray;
 }
 
 void TubeLayer::move(Direction direction) {
     bool isMove = false;
-    int num = 0;
+    int actionCallNum = 0;
     Vector<NumberTube*> tubeToMoveStack, tubeWillArriveStack;
     auto tubeArray = this -> arrangeArray(direction);
     for (int y = 0; y < 4; y++) {
@@ -364,29 +364,29 @@ void TubeLayer::move(Direction direction) {
                 if (tubeToMove -> getNum() == tubeToMoveStack.back() -> getNum()) {
                     isMove = true;
                     tubeToMove -> runActionAddBy(tubeWillArrive);
-                    num++;
+                    actionCallNum++;
                     tubeToMove = tubeToMoveStack.back();
                     tubeToMoveStack.popBack();
                     
                     tubeToMove-> runActionAddTo(tubeWillArrive);
-                    num++;
+                    actionCallNum++;
                     tubeWillArriveStack.popBack();
                     tubeWillArrive = tubeWillArriveStack.back();
                 } else {
                     tubeToMove -> runActionMoveTo(tubeWillArrive);
-                    num++;
+                    actionCallNum++;
                     tubeWillArriveStack.popBack();
                     tubeWillArrive = tubeWillArriveStack.back();
                 }
             } else {
                 tubeToMove -> runActionMoveTo(tubeWillArrive);
-                num++;
+                actionCallNum++;
                 tubeWillArriveStack.popBack();
                 tubeWillArrive = tubeWillArriveStack.back();
             }
         }
     }
     if (isMove) {
-        this -> actionNum = num;
+        this -> actionNum = actionCallNum;
     }
 }

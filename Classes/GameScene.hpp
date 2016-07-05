@@ -11,11 +11,11 @@
 
 #include <stdio.h>
 #include "cocos2d.h"
-#include "DataDelegate.h"
+#include "DataStorageDelegate.h"
 #include "ResetGameDelegate.h"
 #include "AppDelegate.h"
 
-class GameScene : public cocos2d::Scene, public DataDelegate, public ResetGameDelegate {
+class GameScene : public cocos2d::Scene, public DataStorageDelegate, public ResetGameDelegate {
 public:
     virtual bool init();
     CREATE_FUNC(GameScene);
