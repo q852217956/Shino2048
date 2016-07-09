@@ -203,15 +203,15 @@ void TubeLayer::touchInit(Rect touchArea) {
             if (std::abs(moveDistance.x) > std::abs(moveDistance.y)) {
                 if (moveDistance.x > 0) {
                     //每次滑动操作进入到滑动队列，防止同时处理多次操作
-                    touchMoveQueue.push_back(Direction::RIGHT);
+                    touchMoveQueue.push(Direction::RIGHT);
                 } else {
-                    touchMoveQueue.push_back(Direction::LEFT);
+                    touchMoveQueue.push(Direction::LEFT);
                 }
             } else {
                 if (moveDistance.y > 0) {
-                    touchMoveQueue.push_back(Direction::UP);
+                    touchMoveQueue.push(Direction::UP);
                 } else {
-                    touchMoveQueue.push_back(Direction::DOWN);
+                    touchMoveQueue.push(Direction::DOWN);
                 }
             }
             isTouchMoved = true;
@@ -280,7 +280,7 @@ void TubeLayer::update(float dt) {
     }
     if (!touchMoveQueue.empty()) {
         auto moveDirection = touchMoveQueue.front();
-        touchMoveQueue.pop_back();
+        touchMoveQueue.pop();
         move(moveDirection);
     }
 }

@@ -44,7 +44,7 @@ private:
     std::array<std::array<NumberTube*, 4>, 4> arrangeArray(Direction direction);
     void move(Direction direction);
     
-    std::vector<Direction> touchMoveQueue;
+    std::queue<Direction> touchMoveQueue;
     void touchInit(cocos2d::Rect touchArea);
     void labelInit(cocos2d::Rect labelArea);
     void tubeInit(cocos2d::Rect tubeArea);
